@@ -4,14 +4,14 @@ import { ApolloServer } from 'apollo-server-express'
 import { buildSchema } from 'type-graphql'
 import { __prod__ } from './constants'
 import prisma from './prisma'
-import { PostResolver } from './gql/resolvers'
+import { PostResolver, UserResolver } from './gql/resolvers'
 
 const main = async () => {
   const port = parseInt(process.env.PORT || '4000')
   const app = express()
   const apolloServer = new ApolloServer({
     schema: await buildSchema({
-      resolvers: [PostResolver],
+      resolvers: [UserResolver, PostResolver],
       validate: false
     })
   })

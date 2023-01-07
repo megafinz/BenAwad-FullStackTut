@@ -3,7 +3,7 @@ import { Arg, Field, Mutation, ObjectType, Query } from 'type-graphql'
 import prisma from '../../prisma'
 
 @ObjectType()
-export class Post {
+class Post {
   @Field()
   id!: number
 
