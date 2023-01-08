@@ -1,6 +1,7 @@
 import 'reflect-metadata'
 import express from 'express'
 import session from 'express-session'
+import cors from 'cors'
 import { createClient as createRedisClient } from 'redis'
 import redisConnector from 'connect-redis'
 import { ApolloServer } from 'apollo-server-express'
@@ -25,6 +26,15 @@ const main = async () => {
 
   const port = parseInt(process.env.PORT || '4000')
   const app = express().disable('x-powered-by')
+
+  // CORS.
+  // TODO: read from config
+  app.use(
+    cors({
+      origin: 'http://localhost:3000',
+      credentials: true
+    })
+  )
 
   // Redis Session.
   const RedisStore = redisConnector(session)
@@ -64,7 +74,7 @@ const main = async () => {
 
   await apolloServer.start()
 
-  apolloServer.applyMiddleware({ app })
+  apolloServer.applyMiddleware({ app, cors: false })
 
   // Start Server.
   app.listen(port, () => {
