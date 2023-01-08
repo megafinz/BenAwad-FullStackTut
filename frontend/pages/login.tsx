@@ -2,30 +2,28 @@ import { NextPage } from 'next'
 import { useRouter } from 'next/router'
 import { Form, Formik } from 'formik'
 import { Box, Button } from '@chakra-ui/react'
-import { useRegisterUserMutation } from '../graphql/generated/graphql'
+import { useLoginUserMutation } from '../graphql/generated/graphql'
 import InputField from '../components/InputField'
 import Layout from '../components/Layout'
-import { toErrorMap } from '../utils/to-error-map'
 
-const RegisterPage: NextPage = () => {
+const LoginPage: NextPage = () => {
   const router = useRouter()
-  const [_, register] = useRegisterUserMutation()
+  const [_, login] = useLoginUserMutation()
   return (
-    <Layout variant="small">
+    <Layout variant="small" title="Login">
       <Formik
         initialValues={{ username: '', password: '' }}
         onSubmit={async (values, { setErrors }) => {
-          const result = await register({ input: values })
-          if (result.data?.registerUser.errors) {
-            setErrors(toErrorMap(result.data.registerUser.errors))
-          } else if (result.data?.registerUser.user) {
-            router.push('/')
-          } else if (result.error) {
+          const result = await login({ input: values })
+          if (result.error) {
             console.error(result.error)
+          } else if (!result.data?.loginUser.user) {
+            setErrors({
+              username: 'Invalid username or password',
+              password: 'Invalid username or password'
+            })
           } else {
-            console.error(
-              'Something went wrong during user registration process'
-            )
+            router.push('/')
           }
         }}
       >
@@ -44,7 +42,7 @@ const RegisterPage: NextPage = () => {
                 type="password"
               />
               <Button type="submit" isLoading={isSubmitting} colorScheme="teal">
-                Register
+                Login
               </Button>
             </Box>
           </Form>
@@ -54,4 +52,4 @@ const RegisterPage: NextPage = () => {
   )
 }
 
-export default RegisterPage
+export default LoginPage
