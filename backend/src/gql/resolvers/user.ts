@@ -28,7 +28,7 @@ class User {
 }
 
 @InputType()
-class RegisterUserInput {
+class UserCredentialsInput {
   @Field()
   username!: string
 
@@ -63,24 +63,24 @@ class LoginUserResponse {
 export class UserResolver {
   @Mutation(() => RegisterUserResponse)
   async registerUser(
-    @Arg('input') { username, password }: RegisterUserInput
+    @Arg('input') { username, password }: UserCredentialsInput
   ): Promise<RegisterUserResponse> {
-    if (username.length <= 3) {
+    if (username.length <= 2) {
       return {
         errors: [
           {
             field: 'username',
-            message: 'Username length must be greater than 3'
+            message: 'Username length must be greater than 2'
           }
         ]
       }
     }
-    if (password.length <= 3) {
+    if (password.length <= 2) {
       return {
         errors: [
           {
             field: 'password',
-            message: 'Password length must be greater than 3'
+            message: 'Password length must be greater than 2'
           }
         ]
       }
@@ -121,7 +121,7 @@ export class UserResolver {
 
   @Mutation(() => LoginUserResponse)
   async loginUser(
-    @Arg('input') { username, password }: RegisterUserInput,
+    @Arg('input') { username, password }: UserCredentialsInput,
     @Ctx() { req }: ExpressContext
   ): Promise<LoginUserResponse> {
     const found = await prisma.user.findFirst({
