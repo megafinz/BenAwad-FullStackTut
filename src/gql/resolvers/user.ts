@@ -1,5 +1,14 @@
-import { Arg, Field, InputType, Mutation, ObjectType } from 'type-graphql'
+import {
+  Arg,
+  Ctx,
+  Field,
+  InputType,
+  Mutation,
+  ObjectType,
+  Query
+} from 'type-graphql'
 import argon2 from 'argon2'
+import { ExpressContext } from 'apollo-server-express'
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime'
 import prisma from '../../prisma'
 
@@ -112,19 +121,36 @@ export class UserResolver {
 
   @Mutation(() => LoginUserResponse)
   async loginUser(
-    @Arg('input') { username, password }: RegisterUserInput
+    @Arg('input') { username, password }: RegisterUserInput,
+    @Ctx() { req }: ExpressContext
   ): Promise<LoginUserResponse> {
     const found = await prisma.user.findFirst({
       where: { username }
     })
     if (found) {
       const validPassword = await argon2.verify(found.password, password)
-      return {
-        user: validPassword ? found : undefined
+      if (validPassword) {
+        if (!req.session) {
+          console.error('Session is not available on this request')
+          return {}
+        }
+        req.session.userId = found.id
+        return {
+          user: found
+        }
       }
+      return {}
     }
     // TODO: is this the correct way to avoid timing attacks here?
     await argon2.hash(password)
     return { user: undefined }
+  }
+
+  @Query(() => User, { nullable: true })
+  me(@Ctx() { req }: ExpressContext): Promise<User | null> {
+    if (!req.session.userId) {
+      return Promise.resolve(null)
+    }
+    return prisma.user.findFirst({ where: { id: req.session.userId } })
   }
 }
