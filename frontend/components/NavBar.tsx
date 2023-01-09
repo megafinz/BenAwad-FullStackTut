@@ -1,13 +1,14 @@
 import { Button, Flex, Link, Text } from '@chakra-ui/react'
 import NextLink from 'next/link'
-import { useMeQuery } from '../graphql/generated/graphql'
+import { useQuery } from 'urql'
+import { MeDoc } from '../graphql/queries'
 
 export default function NavBar() {
-  const [{ data, fetching }] = useMeQuery()
+  const [{ data, fetching }] = useQuery({ query: MeDoc })
   return (
     <Flex as="nav" bg="tan" p="4" gap="10px" justifyContent="flex-end">
       {fetching && <Text>Loading…</Text>}
-      {!fetching && !data?.me?.id && (
+      {!fetching && !data?.me?.username && (
         <>
           <Text>
             <NextLink href="/login" passHref legacyBehavior>

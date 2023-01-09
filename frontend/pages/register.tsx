@@ -2,14 +2,15 @@ import { NextPage } from 'next'
 import { useRouter } from 'next/router'
 import { Form, Formik } from 'formik'
 import { Box, Button } from '@chakra-ui/react'
-import { useRegisterUserMutation } from '../graphql/generated/graphql'
+import { useMutation } from 'urql'
+import { RegisterUserDoc } from '../graphql/mutations'
+import { toErrorMap } from '../utils/to-error-map'
 import InputField from '../components/InputField'
 import Layout from '../components/Layout'
-import { toErrorMap } from '../utils/to-error-map'
 
 const RegisterPage: NextPage = () => {
   const router = useRouter()
-  const [_, register] = useRegisterUserMutation()
+  const [_, register] = useMutation(RegisterUserDoc)
   return (
     <Layout variant="small">
       <Formik
@@ -19,7 +20,7 @@ const RegisterPage: NextPage = () => {
           if (result.data?.registerUser.errors) {
             setErrors(toErrorMap(result.data.registerUser.errors))
           } else if (result.data?.registerUser.user) {
-            router.push('/')
+            router.push('/login')
           } else if (result.error) {
             console.error(result.error)
           } else {

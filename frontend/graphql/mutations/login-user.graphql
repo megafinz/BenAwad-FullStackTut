@@ -1,7 +1,0 @@
-mutation LoginUser($input: UserCredentialsInput!) {
-  loginUser(input: $input) {
-    user {
-      ...UserFields
-    }
-  }
-}

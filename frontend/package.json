@@ -7,7 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "codegen": "graphql-codegen --config codegen.ts"
+    "codegen": "graphql-codegen --config codegen.ts",
+    "codegen:watch": "graphql-codegen --config codegen.ts --watch"
   },
   "dependencies": {
     "@chakra-ui/react": "^2.4.6",
@@ -31,7 +32,6 @@
   },
   "devDependencies": {
     "@graphql-codegen/cli": "2.16.3",
-    "@graphql-codegen/client-preset": "1.2.5",
-    "@graphql-codegen/typescript-urql": "^3.7.3"
+    "@graphql-codegen/client-preset": "1.2.5"
   }
 }

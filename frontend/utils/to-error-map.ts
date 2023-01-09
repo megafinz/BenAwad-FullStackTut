@@ -1,4 +1,4 @@
-import { ValidationError } from '../graphql/generated/graphql'
+import { ValidationError } from '../graphql/_generated/graphql'
 
 export function toErrorMap(errors: ValidationError[]): Record<string, string> {
   const result: Record<string, string> = {}
