@@ -7,7 +7,7 @@ import redisConnector from 'connect-redis'
 import { ApolloServer } from 'apollo-server-express'
 import { ApolloServerPluginLandingPageGraphQLPlayground } from 'apollo-server-core'
 import { buildSchema } from 'type-graphql'
-import { __prod__ } from './constants'
+import { COOKIE_NAME, __prod__ } from './constants'
 import prisma from './prisma'
 import { PostResolver, UserResolver } from './gql/resolvers'
 
@@ -50,6 +50,7 @@ const main = async () => {
         client: redisClient as any,
         disableTouch: true
       }),
+      name: COOKIE_NAME,
       cookie: {
         maxAge: 1000 * 60 * 60 * 24 * 365 * 10, // 10 years
         httpOnly: true,

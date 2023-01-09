@@ -21,6 +21,11 @@ export const urqlClient = createClient({
             if (loginUserResponse?.user) {
               cache.link('Query', 'me', loginUserResponse.user)
             }
+          },
+          logoutUser: (result, _, cache, __) => {
+            if (!!result.logoutUser) {
+              cache.link('Query', 'me', null)
+            }
           }
         }
       }

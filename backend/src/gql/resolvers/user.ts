@@ -11,6 +11,7 @@ import argon2 from 'argon2'
 import { ExpressContext } from 'apollo-server-express'
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime'
 import prisma from '../../prisma'
+import { COOKIE_NAME } from '../../constants'
 
 @ObjectType()
 class User {
@@ -144,6 +145,21 @@ export class UserResolver {
     // TODO: is this the correct way to avoid timing attacks here?
     await argon2.hash(password)
     return { user: undefined }
+  }
+
+  @Mutation(() => Boolean)
+  logoutUser(@Ctx() { req, res }: ExpressContext) {
+    return new Promise(resolve =>
+      req.session.destroy(error => {
+        if (error) {
+          console.error('There was an issue trying to destroy session', error)
+          resolve(false)
+        } else {
+          res.clearCookie(COOKIE_NAME)
+          resolve(true)
+        }
+      })
+    )
   }
 
   @Query(() => User, { nullable: true })

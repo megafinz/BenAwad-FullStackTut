@@ -1,13 +1,23 @@
 import { Button, Flex, Link, Text } from '@chakra-ui/react'
 import NextLink from 'next/link'
-import { useQuery } from 'urql'
+import { useMutation, useQuery } from 'urql'
+import { LogoutUserDoc } from '../graphql/mutations'
 import { MeDoc } from '../graphql/queries'
+import Loader from './Loader'
 
 export default function NavBar() {
   const [{ data, fetching }] = useQuery({ query: MeDoc })
+  const [{ fetching: loggingOut }, logout] = useMutation(LogoutUserDoc)
   return (
-    <Flex as="nav" bg="tan" p="4" gap="10px" justifyContent="flex-end">
-      {fetching && <Text>Loading…</Text>}
+    <Flex
+      as="nav"
+      bg="tan"
+      p="4"
+      gap="10px"
+      justifyContent="flex-end"
+      alignItems="center"
+    >
+      {fetching && <Loader />}
       {!fetching && !data?.me?.username && (
         <>
           <Text>
@@ -25,7 +35,13 @@ export default function NavBar() {
       {!fetching && !!data?.me?.id && (
         <>
           <Text>{data.me.username}</Text>
-          <Button variant="link">Logout</Button>
+          <Button
+            variant="link"
+            onClick={() => logout({})}
+            isLoading={loggingOut}
+          >
+            Logout
+          </Button>
         </>
       )}
     </Flex>
