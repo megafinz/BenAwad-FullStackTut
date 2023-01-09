@@ -13,9 +13,10 @@ import { TypedDocumentNode as DocumentNode } from '@graphql-typed-document-node/
  * Therefore it is highly recommended to use the babel-plugin for production.
  */
 const documents = {
-    "mutation LoginUser($input: UserCredentialsInput!) {\n  loginUser(input: $input) {\n    user {\n      id\n      username\n    }\n  }\n}": types.LoginUserDocument,
-    "mutation RegisterUser($input: UserCredentialsInput!) {\n  registerUser(input: $input) {\n    errors {\n      field\n      message\n    }\n    user {\n      id\n      username\n    }\n  }\n}": types.RegisterUserDocument,
-    "query Me {\n  me {\n    id\n    username\n  }\n}": types.MeDocument,
+    "fragment UserFields on User {\n  id\n  username\n}": types.UserFieldsFragmentDoc,
+    "mutation LoginUser($input: UserCredentialsInput!) {\n  loginUser(input: $input) {\n    user {\n      ...UserFields\n    }\n  }\n}": types.LoginUserDocument,
+    "mutation RegisterUser($input: UserCredentialsInput!) {\n  registerUser(input: $input) {\n    errors {\n      field\n      message\n    }\n    user {\n      ...UserFields\n    }\n  }\n}": types.RegisterUserDocument,
+    "query Me {\n  me {\n    ...UserFields\n  }\n}": types.MeDocument,
 };
 
 /**
@@ -35,15 +36,19 @@ export function graphql(source: string): unknown;
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
-export function graphql(source: "mutation LoginUser($input: UserCredentialsInput!) {\n  loginUser(input: $input) {\n    user {\n      id\n      username\n    }\n  }\n}"): (typeof documents)["mutation LoginUser($input: UserCredentialsInput!) {\n  loginUser(input: $input) {\n    user {\n      id\n      username\n    }\n  }\n}"];
+export function graphql(source: "fragment UserFields on User {\n  id\n  username\n}"): (typeof documents)["fragment UserFields on User {\n  id\n  username\n}"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
-export function graphql(source: "mutation RegisterUser($input: UserCredentialsInput!) {\n  registerUser(input: $input) {\n    errors {\n      field\n      message\n    }\n    user {\n      id\n      username\n    }\n  }\n}"): (typeof documents)["mutation RegisterUser($input: UserCredentialsInput!) {\n  registerUser(input: $input) {\n    errors {\n      field\n      message\n    }\n    user {\n      id\n      username\n    }\n  }\n}"];
+export function graphql(source: "mutation LoginUser($input: UserCredentialsInput!) {\n  loginUser(input: $input) {\n    user {\n      ...UserFields\n    }\n  }\n}"): (typeof documents)["mutation LoginUser($input: UserCredentialsInput!) {\n  loginUser(input: $input) {\n    user {\n      ...UserFields\n    }\n  }\n}"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
-export function graphql(source: "query Me {\n  me {\n    id\n    username\n  }\n}"): (typeof documents)["query Me {\n  me {\n    id\n    username\n  }\n}"];
+export function graphql(source: "mutation RegisterUser($input: UserCredentialsInput!) {\n  registerUser(input: $input) {\n    errors {\n      field\n      message\n    }\n    user {\n      ...UserFields\n    }\n  }\n}"): (typeof documents)["mutation RegisterUser($input: UserCredentialsInput!) {\n  registerUser(input: $input) {\n    errors {\n      field\n      message\n    }\n    user {\n      ...UserFields\n    }\n  }\n}"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "query Me {\n  me {\n    ...UserFields\n  }\n}"): (typeof documents)["query Me {\n  me {\n    ...UserFields\n  }\n}"];
 
 export function graphql(source: string) {
   return (documents as any)[source] ?? {};

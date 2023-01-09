@@ -5,17 +5,17 @@ import { useMeQuery } from '../graphql/generated/graphql'
 export default function NavBar() {
   const [{ data, fetching }] = useMeQuery()
   return (
-    <Flex as="nav" bg="tomato" p="4" gap="10px" justifyContent="flex-end">
+    <Flex as="nav" bg="tan" p="4" gap="10px" justifyContent="flex-end">
       {fetching && <Text>Loading…</Text>}
       {!fetching && !data?.me?.id && (
         <>
           <Text>
-            <NextLink href="/login" passHref>
+            <NextLink href="/login" passHref legacyBehavior>
               <Link>Login</Link>
             </NextLink>
           </Text>
           <Text>
-            <NextLink href="/register" passHref>
+            <NextLink href="/register" passHref legacyBehavior>
               <Link>Register</Link>
             </NextLink>
           </Text>
