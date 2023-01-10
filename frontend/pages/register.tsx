@@ -1,12 +1,13 @@
+import { Box, Button } from '@chakra-ui/react'
+import { Form, Formik } from 'formik'
 import { NextPage } from 'next'
 import { useRouter } from 'next/router'
-import { Form, Formik } from 'formik'
-import { Box, Button } from '@chakra-ui/react'
 import { useMutation } from 'urql'
-import { RegisterUserDoc } from '../graphql/mutations'
-import { toErrorMap } from '../utils/to-error-map'
-import InputField from '../components/InputField'
-import Layout from '../components/Layout'
+import InputField from '~/components/InputField'
+import Layout from '~/components/Layout'
+import { RegisterUserDoc } from '~/graphql/mutations'
+import { withUrqlClient } from '~/lib/urql'
+import { toErrorMap } from '~/utils'
 
 const RegisterPage: NextPage = () => {
   const router = useRouter()
@@ -55,4 +56,4 @@ const RegisterPage: NextPage = () => {
   )
 }
 
-export default RegisterPage
+export default withUrqlClient()(RegisterPage)

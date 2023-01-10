@@ -5,10 +5,14 @@ const MotionDiv = chakra(motion.div, {
   shouldForwardProp: prop => isValidMotionProp(prop) || shouldForwardProp(prop)
 })
 
-export default function Loader() {
+interface Props {
+  variant?: 'light' | 'dark'
+}
+
+export default function Loader({ variant = 'dark' }: Props) {
   return (
     <MotionDiv
-      border="dashed #fff"
+      border={variant === 'light' ? 'dashed #fff' : 'dashed #0af'}
       borderRadius="50%"
       w="1.5rem"
       h="1.5rem"
