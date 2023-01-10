@@ -3,6 +3,7 @@ import NextLink from 'next/link'
 import { useMutation, useQuery } from 'urql'
 import { LogoutUserDoc } from '~/graphql/mutations'
 import { MeDoc } from '~/graphql/queries'
+import { isServer } from '~/utils'
 import Loader from './Loader'
 
 function NavLink({ title, url }: { title: string; url: string }) {
@@ -16,7 +17,8 @@ function NavLink({ title, url }: { title: string; url: string }) {
 }
 
 export default function NavBar() {
-  const [{ data, fetching }] = useQuery({ query: MeDoc })
+  // TODO: next.js server/client rendering mismatch
+  const [{ data, fetching }] = useQuery({ query: MeDoc, pause: isServer() })
   const [{ fetching: loggingOut }, logout] = useMutation(LogoutUserDoc)
   return (
     <Flex

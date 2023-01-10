@@ -1,6 +1,7 @@
-import { Box, Button } from '@chakra-ui/react'
+import { Box, Button, Divider } from '@chakra-ui/react'
 import { Form, Formik } from 'formik'
 import { NextPage } from 'next'
+import NextLink from 'next/link'
 import { useRouter } from 'next/router'
 import { useMutation } from 'urql'
 import InputField from '~/components/InputField'
@@ -15,7 +16,7 @@ const RegisterPage: NextPage = () => {
   return (
     <Layout variant="small">
       <Formik
-        initialValues={{ username: '', password: '' }}
+        initialValues={{ username: '', email: '', password: '' }}
         onSubmit={async (values, { setErrors }) => {
           const result = await register({ input: values })
           if (result.data?.registerUser.errors) {
@@ -39,6 +40,7 @@ const RegisterPage: NextPage = () => {
                 label="Username"
                 placeholder="Username"
               />
+              <InputField name="email" label="Email" placeholder="Email" />
               <InputField
                 name="password"
                 label="Password"
@@ -47,6 +49,10 @@ const RegisterPage: NextPage = () => {
               />
               <Button type="submit" isLoading={isSubmitting} colorScheme="teal">
                 Register
+              </Button>
+              <Divider />
+              <Button colorScheme="teal" variant="link">
+                <NextLink href="/login">Login</NextLink>
               </Button>
             </Box>
           </Form>

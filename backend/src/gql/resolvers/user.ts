@@ -1,3 +1,7 @@
+import { PrismaClientKnownRequestError } from '@prisma/client/runtime'
+import { ExpressContext } from 'apollo-server-express'
+import argon2 from 'argon2'
+import { RedisClientType } from 'redis'
 import {
   Arg,
   Ctx,
@@ -7,11 +11,10 @@ import {
   ObjectType,
   Query
 } from 'type-graphql'
-import argon2 from 'argon2'
-import { ExpressContext } from 'apollo-server-express'
-import { PrismaClientKnownRequestError } from '@prisma/client/runtime'
+import { v4 } from 'uuid'
+import { COOKIE_NAME, FORGOT_PASSWORD_PREFIX } from '../../constants'
 import prisma from '../../prisma'
-import { COOKIE_NAME } from '../../constants'
+import { sendForgotPasswordEmail } from '../../utils/email'
 
 @ObjectType()
 class User {
@@ -20,6 +23,9 @@ class User {
 
   @Field()
   username!: string
+
+  @Field()
+  email!: string
 
   @Field()
   createdAt!: Date
@@ -32,6 +38,9 @@ class User {
 class UserCredentialsInput {
   @Field()
   username!: string
+
+  @Field()
+  email!: string
 
   @Field()
   password!: string
@@ -49,7 +58,7 @@ class ValidationError {
 @ObjectType()
 class RegisterUserResponse {
   @Field(() => [ValidationError], { nullable: true })
-  errors?: [ValidationError]
+  errors?: ValidationError[]
 
   @Field(() => User, { nullable: true })
   user?: User
@@ -61,10 +70,16 @@ class LoginUserResponse {
   user?: User
 }
 
+@ObjectType()
+class ForgotPasswordResponse {
+  @Field()
+  message!: string
+}
+
 export class UserResolver {
   @Mutation(() => RegisterUserResponse)
   async registerUser(
-    @Arg('input') { username, password }: UserCredentialsInput
+    @Arg('input') { username, email, password }: UserCredentialsInput
   ): Promise<RegisterUserResponse> {
     if (username.length <= 2) {
       return {
@@ -72,6 +87,16 @@ export class UserResolver {
           {
             field: 'username',
             message: 'Username length must be greater than 2'
+          }
+        ]
+      }
+    }
+    if (!email.match(/[^@\s]+@[^@\s]+/)) {
+      return {
+        errors: [
+          {
+            field: 'email',
+            message: 'Incorrect email'
           }
         ]
       }
@@ -89,7 +114,7 @@ export class UserResolver {
     const hashedPassword = await argon2.hash(password)
     try {
       const newUser = await prisma.user.create({
-        data: { username, password: hashedPassword }
+        data: { username, email, password: hashedPassword }
       })
       return {
         user: newUser
@@ -104,7 +129,11 @@ export class UserResolver {
           errors: [
             {
               field: 'username',
-              message: 'Username already taken'
+              message: 'Username or email already taken'
+            },
+            {
+              field: 'email',
+              message: 'Username or email already taken'
             }
           ]
         }
@@ -122,11 +151,12 @@ export class UserResolver {
 
   @Mutation(() => LoginUserResponse)
   async loginUser(
-    @Arg('input') { username, password }: UserCredentialsInput,
+    @Arg('usernameOrEmail') usernameOrEmail: string,
+    @Arg('password') password: string,
     @Ctx() { req }: ExpressContext
   ): Promise<LoginUserResponse> {
     const found = await prisma.user.findFirst({
-      where: { username }
+      where: { OR: [{ username: usernameOrEmail }, { email: usernameOrEmail }] }
     })
     if (found) {
       const validPassword = await argon2.verify(found.password, password)
@@ -160,6 +190,27 @@ export class UserResolver {
         }
       })
     )
+  }
+
+  @Mutation(() => ForgotPasswordResponse)
+  async forgotPassword(
+    @Arg('email') email: string,
+    @Ctx() { redisClient }: { redisClient: RedisClientType }
+  ): Promise<ForgotPasswordResponse> {
+    const result: ForgotPasswordResponse = {
+      message: 'You will shortly receive a reset password link in an email'
+    }
+    const user = await prisma.user.findFirst({ where: { email } })
+    if (user) {
+      const token = `${FORGOT_PASSWORD_PREFIX}${v4()}`
+      await redisClient.setEx(token, 60 * 24, `${user.id}`)
+      // TODO: address from config
+      await sendForgotPasswordEmail({
+        to: user.email,
+        link: `<a href="http://localhost:4000/api/v1/change-password/${token}">Change Password</a>`
+      })
+    }
+    return result
   }
 
   @Query(() => User, { nullable: true })

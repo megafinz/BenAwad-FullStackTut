@@ -69,7 +69,7 @@ const main = async () => {
       resolvers: [UserResolver, PostResolver],
       validate: false
     }),
-    context: ({ req, res }) => ({ req, res }),
+    context: ({ req, res }) => ({ req, res, redisClient }),
     plugins: [ApolloServerPluginLandingPageGraphQLPlayground()]
   })
 
