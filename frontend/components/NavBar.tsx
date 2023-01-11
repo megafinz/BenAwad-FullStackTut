@@ -1,5 +1,6 @@
 import { Button, Flex, Link, Text } from '@chakra-ui/react'
 import NextLink from 'next/link'
+import { useEffect, useState } from 'react'
 import { useMutation, useQuery } from 'urql'
 import { LogoutUserDoc } from '~/graphql/mutations'
 import { MeDoc } from '~/graphql/queries'
@@ -17,9 +18,16 @@ function NavLink({ title, url }: { title: string; url: string }) {
 }
 
 export default function NavBar() {
-  // TODO: next.js server/client rendering mismatch
-  const [{ data, fetching }] = useQuery({ query: MeDoc, pause: isServer() })
+  // Make sure to run the query only after initial hydration (after useEffect())
+  // to avoid client/server hydration mismatch error due to SSR being enabled.
+  const [pauseQuery, setPauseQuery] = useState(true)
+  const [{ data, fetching }] = useQuery({ query: MeDoc, pause: pauseQuery })
   const [{ fetching: loggingOut }, logout] = useMutation(LogoutUserDoc)
+  useEffect(() => {
+    if (!isServer()) {
+      setPauseQuery(false)
+    }
+  }, [])
   return (
     <Flex
       as="nav"
