@@ -59,3 +59,12 @@ export class ForgotPasswordResponse {
   @Field()
   message!: string
 }
+
+@ObjectType()
+export class ChangePasswordResponse {
+  @Field(() => [ValidationError], { nullable: true })
+  errors?: ValidationError[]
+
+  @Field()
+  success!: boolean
+}

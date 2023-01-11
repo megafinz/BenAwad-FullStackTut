@@ -5,22 +5,28 @@ import prisma from '../../../prisma'
 import { sendForgotPasswordEmail } from '../../../utils/email'
 import { ForgotPasswordResponse } from './model'
 
+// For security purposes this should be the result for both success and failure paths.
+const RESULT: ForgotPasswordResponse = {
+  message: 'You will shortly receive a reset password link in an email'
+}
+
 export async function forgotPassword(
   email: string,
-  { redisClient }: { redisClient: RedisClientType }
+  { redis }: { redis: RedisClientType }
 ): Promise<ForgotPasswordResponse> {
-  const result: ForgotPasswordResponse = {
-    message: 'You will shortly receive a reset password link in an email'
-  }
   const user = await prisma.user.findFirst({ where: { email } })
   if (user) {
-    const token = `${FORGOT_PASSWORD_PREFIX}${v4()}`
-    await redisClient.setEx(token, 60 * 24, `${user.id}`)
+    const token = v4()
+    await redis.v4.setEx(
+      `${FORGOT_PASSWORD_PREFIX}${token}`,
+      60 * 24, // expires in 1 day
+      `${user.id}`
+    )
     // TODO: address from config
     await sendForgotPasswordEmail({
       to: user.email,
       link: `<a href="http://localhost:3000/change-password/${token}">Change Password</a>`
     })
   }
-  return result
+  return RESULT
 }

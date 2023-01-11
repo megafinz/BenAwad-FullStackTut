@@ -1,15 +1,15 @@
-import 'reflect-metadata'
+import { ApolloServerPluginLandingPageGraphQLPlayground } from 'apollo-server-core'
+import { ApolloServer } from 'apollo-server-express'
+import redisConnector from 'connect-redis'
+import cors from 'cors'
 import express from 'express'
 import session from 'express-session'
-import cors from 'cors'
 import { createClient as createRedisClient } from 'redis'
-import redisConnector from 'connect-redis'
-import { ApolloServer } from 'apollo-server-express'
-import { ApolloServerPluginLandingPageGraphQLPlayground } from 'apollo-server-core'
+import 'reflect-metadata'
 import { buildSchema } from 'type-graphql'
 import { COOKIE_NAME, __prod__ } from './constants'
-import prisma from './prisma'
 import { PostResolver, UserResolver } from './gql/resolvers'
+import prisma from './prisma'
 
 declare module 'express-session' {
   interface SessionData {
@@ -38,7 +38,7 @@ const main = async () => {
 
   // Redis Session.
   const RedisStore = redisConnector(session)
-  // TODO: find a better solution to session storage
+  // TODO: find a better solution instead of legacy mode for enabling session storage
   const redisClient = createRedisClient({ legacyMode: true })
 
   await redisClient.connect().catch(console.error)
@@ -69,7 +69,7 @@ const main = async () => {
       resolvers: [UserResolver, PostResolver],
       validate: false
     }),
-    context: ({ req, res }) => ({ req, res, redisClient }),
+    context: ({ req, res }) => ({ req, res, redis: redisClient }),
     plugins: [ApolloServerPluginLandingPageGraphQLPlayground()]
   })
 

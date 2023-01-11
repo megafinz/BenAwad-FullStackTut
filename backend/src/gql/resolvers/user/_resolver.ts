@@ -1,29 +1,31 @@
 import { ExpressContext } from 'apollo-server-express'
 import { RedisClientType } from 'redis'
 import { Arg, Ctx, Mutation, Query } from 'type-graphql'
+import { changePassword } from './change-password'
 import { forgotPassword } from './forgot-password'
 import { loginUser } from './login-user'
 import { logoutUser } from './logout-user'
 import { me } from './me'
 import {
-  RegisterUserResponse,
-  UserCredentialsInput,
-  LoginUserResponse,
+  ChangePasswordResponse,
   ForgotPasswordResponse,
-  User
+  LoginUserResponse,
+  RegisterUserResponse,
+  User,
+  UserCredentialsInput
 } from './model'
 import { registerUser } from './register-user'
 
 export class UserResolver {
   @Mutation(() => RegisterUserResponse)
-  async registerUser(
+  registerUser(
     @Arg('input') input: UserCredentialsInput
   ): Promise<RegisterUserResponse> {
     return registerUser(input)
   }
 
   @Mutation(() => LoginUserResponse)
-  async loginUser(
+  loginUser(
     @Arg('usernameOrEmail') usernameOrEmail: string,
     @Arg('password') password: string,
     @Ctx() ctx: ExpressContext
@@ -37,11 +39,20 @@ export class UserResolver {
   }
 
   @Mutation(() => ForgotPasswordResponse)
-  async forgotPassword(
+  forgotPassword(
     @Arg('email') email: string,
-    @Ctx() ctx: { redisClient: RedisClientType }
+    @Ctx() ctx: { redis: RedisClientType }
   ): Promise<ForgotPasswordResponse> {
     return forgotPassword(email, ctx)
+  }
+
+  @Mutation(() => ChangePasswordResponse)
+  changePassword(
+    @Arg('newPassword') newPassword: string,
+    @Arg('token') token: string,
+    @Ctx() ctx: { redis: RedisClientType }
+  ): Promise<ChangePasswordResponse> {
+    return changePassword(newPassword, token, ctx)
   }
 
   @Query(() => User, { nullable: true })
