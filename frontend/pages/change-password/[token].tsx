@@ -10,13 +10,17 @@ import { ChangePasswordDoc } from '~/graphql/mutations'
 import { withUrqlClient } from '~/lib/urql'
 import { toErrorMap } from '~/utils'
 
-const ChangePasswordPage: NextPage<{ token: string }> = ({ token }) => {
+const ChangePasswordPage: NextPage = () => {
   const router = useRouter()
   const [_, changePassword] = useMutation(ChangePasswordDoc)
   return (
     <Layout variant="small" title="Change Password">
       <Formik
-        initialValues={{ newPassword: '', token }}
+        initialValues={{
+          newPassword: '',
+          token:
+            typeof router.query.token === 'string' ? router.query.token : ''
+        }}
         onSubmit={async (values, { setErrors }) => {
           const result = await changePassword(values)
           if (result.data?.changePassword.success) {
@@ -53,12 +57,6 @@ const ChangePasswordPage: NextPage<{ token: string }> = ({ token }) => {
       </Formik>
     </Layout>
   )
-}
-
-ChangePasswordPage.getInitialProps = ({ query }) => {
-  return {
-    token: query.token as string
-  }
 }
 
 export default withUrqlClient()(ChangePasswordPage)

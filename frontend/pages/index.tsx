@@ -2,7 +2,6 @@ import { NextPage } from 'next'
 import { useQuery } from 'urql'
 import Layout from '~/components/Layout'
 import Loader from '~/components/Loader'
-import NavBar from '~/components/NavBar'
 import { PostsDoc } from '~/graphql/queries'
 import { withUrqlClient } from '~/lib/urql'
 
@@ -10,7 +9,6 @@ const Home: NextPage = () => {
   const [{ data, fetching }] = useQuery({ query: PostsDoc })
   return (
     <Layout>
-      <NavBar />
       <main>
         {fetching && <Loader />}
         {!fetching && !data?.allPosts && <p>Can&apos;t load posts</p>}

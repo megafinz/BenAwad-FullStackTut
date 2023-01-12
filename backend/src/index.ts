@@ -41,7 +41,12 @@ const main = async () => {
   // TODO: find a better solution instead of legacy mode for enabling session storage
   const redisClient = createRedisClient({ legacyMode: true })
 
-  await redisClient.connect().catch(console.error)
+  try {
+    await redisClient.connect()
+  } catch (error) {
+    console.error('Failed to initialize Redis connection')
+    throw error
+  }
 
   app.use(
     session({
@@ -73,7 +78,12 @@ const main = async () => {
     plugins: [ApolloServerPluginLandingPageGraphQLPlayground()]
   })
 
-  await apolloServer.start()
+  try {
+    await apolloServer.start()
+  } catch (error) {
+    console.error('Failed to initialize Apollo Server')
+    throw error
+  }
 
   apolloServer.applyMiddleware({ app, cors: false })
 

@@ -1,5 +1,6 @@
 import { Box } from '@chakra-ui/react'
 import Head from 'next/head'
+import NavBar from './NavBar'
 
 interface Props {
   children?: React.ReactNode
@@ -22,6 +23,7 @@ export default function Layout({
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
+      <NavBar />
       <Box
         as="main"
         mx="auto"

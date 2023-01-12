@@ -1,4 +1,5 @@
 import { ObjectType, Field, InputType } from 'type-graphql'
+import { ValidationError } from '../models'
 
 @ObjectType()
 export class User {
@@ -28,15 +29,6 @@ export class UserCredentialsInput {
 
   @Field()
   password!: string
-}
-
-@ObjectType()
-export class ValidationError {
-  @Field()
-  field?: string
-
-  @Field()
-  message!: string
 }
 
 @ObjectType()

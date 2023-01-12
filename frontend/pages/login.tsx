@@ -26,7 +26,9 @@ const LoginPage: NextPage = () => {
               password: 'Invalid username or password'
             })
           } else {
-            router.push('/')
+            router.push(
+              typeof router.query.next === 'string' ? router.query.next : '/'
+            )
           }
         }}
       >
