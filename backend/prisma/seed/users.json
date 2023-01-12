@@ -1,0 +1,7 @@
+[
+  {
+    "username": "megafinz",
+    "email": "megafinz@example.com",
+    "password": "$argon2id$v=19$m=65536,t=3,p=4$E67StDQ8hQVY5wWuO6ii+Q$2YTkARZn0GTUCEZllKuvG+2KVCWxfGu7Wgpr7Ft+gFU"
+  }
+]
