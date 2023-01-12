@@ -6,6 +6,7 @@ import {
 import router from 'next/router'
 import { dedupExchange, Exchange, fetchExchange } from 'urql'
 import { pipe, tap } from 'wonka'
+import { CreatePostResponse } from '~/graphql/_generated/graphql'
 
 interface LoginUserResponse {
   user: Data
@@ -42,6 +43,10 @@ export const withUrqlClient = (options?: WithUrqlClientOptions) =>
         dedupExchange,
         authErrorExchange,
         cacheExchange({
+          keys: {
+            PostsResponse: () => null,
+            PaginationInfo: () => null
+          },
           updates: {
             Mutation: {
               loginUser: (result, _, cache, __) => {
@@ -53,6 +58,13 @@ export const withUrqlClient = (options?: WithUrqlClientOptions) =>
               logoutUser: (result, _, cache, __) => {
                 if (!!result.logoutUser) {
                   cache.link('Query', 'me', null)
+                }
+              },
+              createPost: (result, _, cache, __) => {
+                const createPostResponse =
+                  result.createPost as CreatePostResponse
+                if (createPostResponse?.post) {
+                  // TODO.
                 }
               }
             }

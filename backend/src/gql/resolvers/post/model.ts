@@ -1,5 +1,5 @@
 import { ObjectType, Field, InputType, Int } from 'type-graphql'
-import { ValidationError } from '../models'
+import { PaginationInfo, ValidationError } from '../models'
 
 @ObjectType()
 export class Post {
@@ -35,4 +35,13 @@ export class CreatePostResponse {
 
   @Field(() => [ValidationError], { nullable: true })
   errors?: ValidationError[]
+}
+
+@ObjectType()
+export class PostsResponse {
+  @Field(() => [Post])
+  data!: Post[]
+
+  @Field(() => PaginationInfo)
+  pagination!: PaginationInfo
 }

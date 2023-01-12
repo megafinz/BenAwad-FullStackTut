@@ -1,11 +1,7 @@
 import { ExpressContext } from 'apollo-server-express'
-import { Max, Min } from 'class-validator'
 import {
   Arg,
-  Args,
-  ArgsType,
   Ctx,
-  Field,
   FieldResolver,
   Int,
   Mutation,
@@ -15,23 +11,18 @@ import {
   UseMiddleware
 } from 'type-graphql'
 import { auth } from '../../middleware'
-import { allPosts } from './all-posts'
+import { PaginationInput } from '../models'
 import { createPost } from './create-post'
 import { deletePost } from './delete-post'
-import { CreatePostInput, CreatePostResponse, Post } from './model'
+import {
+  CreatePostInput,
+  CreatePostResponse,
+  Post,
+  PostsResponse
+} from './model'
 import { post } from './post'
+import { posts } from './posts'
 import { updatePost } from './update-post'
-
-@ArgsType()
-class AllPostsArgs {
-  @Field(() => Int, { defaultValue: 10 })
-  @Min(1)
-  @Max(50)
-  limit!: number
-
-  @Field(() => String, { nullable: true })
-  cursor?: string
-}
 
 @Resolver(() => Post)
 export class PostResolver {
@@ -40,9 +31,9 @@ export class PostResolver {
     return root.text.slice(0, 50)
   }
 
-  @Query(() => [Post])
-  allPosts(@Args() { limit, cursor }: AllPostsArgs): Promise<Post[]> {
-    return allPosts(limit, cursor)
+  @Query(() => PostsResponse)
+  posts(@Arg('query') query: PaginationInput): Promise<PostsResponse> {
+    return posts(query)
   }
 
   @Query(() => Post, { nullable: true })
