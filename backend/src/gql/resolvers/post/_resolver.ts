@@ -1,5 +1,19 @@
 import { ExpressContext } from 'apollo-server-express'
-import { Arg, Ctx, Mutation, Query, UseMiddleware } from 'type-graphql'
+import { Max, Min } from 'class-validator'
+import {
+  Arg,
+  Args,
+  ArgsType,
+  Ctx,
+  Field,
+  FieldResolver,
+  Int,
+  Mutation,
+  Query,
+  Resolver,
+  Root,
+  UseMiddleware
+} from 'type-graphql'
 import { auth } from '../../middleware'
 import { allPosts } from './all-posts'
 import { createPost } from './create-post'
@@ -8,14 +22,31 @@ import { CreatePostInput, CreatePostResponse, Post } from './model'
 import { post } from './post'
 import { updatePost } from './update-post'
 
+@ArgsType()
+class AllPostsArgs {
+  @Field(() => Int, { defaultValue: 10 })
+  @Min(1)
+  @Max(50)
+  limit!: number
+
+  @Field(() => String, { nullable: true })
+  cursor?: string
+}
+
+@Resolver(() => Post)
 export class PostResolver {
+  @FieldResolver(() => String)
+  textSnippet(@Root() root: Post) {
+    return root.text.slice(0, 50)
+  }
+
   @Query(() => [Post])
-  allPosts(): Promise<Post[]> {
-    return allPosts()
+  allPosts(@Args() { limit, cursor }: AllPostsArgs): Promise<Post[]> {
+    return allPosts(limit, cursor)
   }
 
   @Query(() => Post, { nullable: true })
-  post(@Arg('id') id: number): Promise<Post | null> {
+  post(@Arg('id', () => Int) id: number): Promise<Post | null> {
     return post(id)
   }
 
@@ -31,7 +62,7 @@ export class PostResolver {
   @Mutation(() => Post, { nullable: true })
   @UseMiddleware(auth)
   async updatePost(
-    @Arg('id') id: number,
+    @Arg('id', () => Int) id: number,
     @Arg('title', { nullable: true }) title: string
   ): Promise<Post | null> {
     return updatePost(id, title)
@@ -39,7 +70,7 @@ export class PostResolver {
 
   @Mutation(() => Boolean)
   @UseMiddleware(auth)
-  async deletePost(@Arg('id') id: number): Promise<boolean> {
+  async deletePost(@Arg('id', () => Int) id: number): Promise<boolean> {
     return deletePost(id)
   }
 }

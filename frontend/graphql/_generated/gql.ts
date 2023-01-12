@@ -20,8 +20,8 @@ const documents = {
     "\n  mutation LoginUser($usernameOrEmail: String!, $password: String!) {\n    loginUser(usernameOrEmail: $usernameOrEmail, password: $password) {\n      user {\n        ...UserFields\n      }\n    }\n  }\n": types.LoginUserDocument,
     "\n  mutation LogoutUser {\n    logoutUser\n  }\n": types.LogoutUserDocument,
     "\n  mutation RegisterUser($input: UserCredentialsInput!) {\n    registerUser(input: $input) {\n      errors {\n        field\n        message\n      }\n      user {\n        ...UserFields\n      }\n    }\n  }\n": types.RegisterUserDocument,
+    "\n  query Posts($limit: Int!, $cursor: String) {\n    allPosts(limit: $limit, cursor: $cursor) {\n      id\n      createdAt\n      title\n      textSnippet\n    }\n  }\n": types.PostsDocument,
     "\n  query Me {\n    me {\n      ...UserFields\n    }\n  }\n": types.MeDocument,
-    "\n  query Posts {\n    allPosts {\n      id\n      title\n    }\n  }\n": types.PostsDocument,
 };
 
 /**
@@ -69,11 +69,11 @@ export function graphql(source: "\n  mutation RegisterUser($input: UserCredentia
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
-export function graphql(source: "\n  query Me {\n    me {\n      ...UserFields\n    }\n  }\n"): (typeof documents)["\n  query Me {\n    me {\n      ...UserFields\n    }\n  }\n"];
+export function graphql(source: "\n  query Posts($limit: Int!, $cursor: String) {\n    allPosts(limit: $limit, cursor: $cursor) {\n      id\n      createdAt\n      title\n      textSnippet\n    }\n  }\n"): (typeof documents)["\n  query Posts($limit: Int!, $cursor: String) {\n    allPosts(limit: $limit, cursor: $cursor) {\n      id\n      createdAt\n      title\n      textSnippet\n    }\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
-export function graphql(source: "\n  query Posts {\n    allPosts {\n      id\n      title\n    }\n  }\n"): (typeof documents)["\n  query Posts {\n    allPosts {\n      id\n      title\n    }\n  }\n"];
+export function graphql(source: "\n  query Me {\n    me {\n      ...UserFields\n    }\n  }\n"): (typeof documents)["\n  query Me {\n    me {\n      ...UserFields\n    }\n  }\n"];
 
 export function graphql(source: string) {
   return (documents as any)[source] ?? {};

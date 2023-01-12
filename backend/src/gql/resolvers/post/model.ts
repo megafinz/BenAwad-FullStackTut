@@ -1,13 +1,16 @@
-import { ObjectType, Field, InputType } from 'type-graphql'
+import { ObjectType, Field, InputType, Int } from 'type-graphql'
 import { ValidationError } from '../models'
 
 @ObjectType()
 export class Post {
-  @Field()
+  @Field(() => Int)
   id!: number
 
   @Field()
   title!: string
+
+  @Field()
+  text!: string
 
   @Field()
   createdAt!: Date
@@ -17,7 +20,7 @@ export class Post {
 }
 
 @InputType()
-export class CreatePostInput {
+export class CreatePostInput implements Partial<Post> {
   @Field()
   title!: string
 

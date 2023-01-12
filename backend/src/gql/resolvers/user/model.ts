@@ -1,9 +1,9 @@
-import { ObjectType, Field, InputType } from 'type-graphql'
+import { ObjectType, Field, InputType, Int } from 'type-graphql'
 import { ValidationError } from '../models'
 
 @ObjectType()
 export class User {
-  @Field()
+  @Field(() => Int)
   id!: number
 
   @Field()
@@ -20,7 +20,7 @@ export class User {
 }
 
 @InputType()
-export class UserCredentialsInput {
+export class UserCredentialsInput implements Partial<User> {
   @Field()
   username!: string
 

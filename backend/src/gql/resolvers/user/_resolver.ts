@@ -1,6 +1,6 @@
 import { ExpressContext } from 'apollo-server-express'
 import { RedisClientType } from 'redis'
-import { Arg, Ctx, Mutation, Query } from 'type-graphql'
+import { Arg, Ctx, Mutation, Query, Resolver } from 'type-graphql'
 import { changePassword } from './change-password'
 import { forgotPassword } from './forgot-password'
 import { loginUser } from './login-user'
@@ -16,6 +16,7 @@ import {
 } from './model'
 import { registerUser } from './register-user'
 
+@Resolver(() => User)
 export class UserResolver {
   @Mutation(() => RegisterUserResponse)
   registerUser(
