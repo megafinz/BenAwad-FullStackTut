@@ -1,4 +1,4 @@
-import { Button, Flex, Link, Text } from '@chakra-ui/react'
+import { Button, Flex, Link, Spacer, Text, Tooltip } from '@chakra-ui/react'
 import NextLink from 'next/link'
 import { useEffect, useState } from 'react'
 import { useMutation, useQuery } from 'urql'
@@ -29,14 +29,11 @@ export default function NavBar() {
     }
   }, [])
   return (
-    <Flex
-      as="nav"
-      bg="tan"
-      p="4"
-      gap="10px"
-      justifyContent="flex-end"
-      alignItems="center"
-    >
+    <Flex as="nav" bg="tan" p="4" gap="10px" alignItems="center">
+      <Tooltip label="Home" openDelay={1000}>
+        <NextLink href="/">⚫️</NextLink>
+      </Tooltip>
+      <Spacer />
       {fetching && <Loader variant="light" />}
       {!fetching && !data?.me?.username && (
         <>

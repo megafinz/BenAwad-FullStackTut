@@ -1,6 +1,8 @@
 import { Max, Min } from 'class-validator'
 import { Field, InputType, Int, ObjectType } from 'type-graphql'
 
+// TODO: better name/design since this is used not only for validation errors
+// but for general type errors also
 @ObjectType()
 export class ValidationError {
   @Field()

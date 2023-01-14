@@ -6,7 +6,12 @@ import {
 import router from 'next/router'
 import { dedupExchange, Exchange, fetchExchange } from 'urql'
 import { pipe, tap } from 'wonka'
-import { CreatePostResponse } from '~/graphql/_generated/graphql'
+import { PostsDoc } from '~/graphql/queries'
+import {
+  UnvoteInput,
+  VoteInput,
+  VoteResponse
+} from '~/graphql/_generated/graphql'
 
 interface LoginUserResponse {
   user: Data
@@ -45,27 +50,48 @@ export const withUrqlClient = (options?: WithUrqlClientOptions) =>
         cacheExchange({
           keys: {
             PostsResponse: () => null,
-            PaginationInfo: () => null
+            PaginationInfo: () => null,
+            PostVote: () => null
           },
           updates: {
             Mutation: {
-              loginUser: (result, _, cache, __) => {
+              loginUser: (result, _, cache) => {
                 const loginUserResponse = result.loginUser as LoginUserResponse
                 if (loginUserResponse?.user) {
                   cache.link('Query', 'me', loginUserResponse.user)
                 }
               },
-              logoutUser: (result, _, cache, __) => {
+              logoutUser: (result, _, cache) => {
                 if (!!result.logoutUser) {
                   cache.link('Query', 'me', null)
                 }
               },
-              createPost: (result, _, cache, __) => {
-                const createPostResponse =
-                  result.createPost as CreatePostResponse
-                if (createPostResponse?.post) {
-                  // TODO.
+              createPost: (_, __, cache) => {
+                cache.updateQuery({ query: PostsDoc }, () => null)
+              },
+              vote: (result, args, cache) => {
+                const voteResponse = result.vote as VoteResponse
+                const voteArgs = args as { input: VoteInput }
+                if (!voteResponse?.success || !voteArgs) {
+                  return
                 }
+                // TODO: finer grained update
+                cache.invalidate({
+                  __typename: 'Post',
+                  id: voteArgs.input.postId
+                })
+              },
+              unvote: (result, args, cache) => {
+                const unvoteResponse = result.unvote as VoteResponse
+                const voteArgs = args as { input: UnvoteInput }
+                if (!unvoteResponse?.success || !voteArgs) {
+                  return
+                }
+                // TODO: finer grained update
+                cache.invalidate({
+                  __typename: 'Post',
+                  id: voteArgs.input.postId
+                })
               }
             }
           }

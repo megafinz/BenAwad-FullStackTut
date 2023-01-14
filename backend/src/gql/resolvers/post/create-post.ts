@@ -1,5 +1,5 @@
 import prisma from '../../../prisma'
-import type { CreatePostInput, CreatePostResponse } from './model'
+import type { CreatePostInput, CreatePostResponse } from './_model'
 
 export async function createPost(
   input: CreatePostInput,
@@ -27,17 +27,18 @@ export async function createPost(
   }
   try {
     const newPost = await prisma.post.create({
-      data: { ...input, authorId: userId }
+      data: { ...input, authorId: userId },
+      include: { author: true, votes: { include: { user: true } } }
     })
     return {
-      post: newPost
+      post: { ...newPost, votes: [] }
     }
   } catch (error) {
-    console.error('There a problem creating a Post', error)
+    console.error('Error creating a Post', error)
     return {
       errors: [
         {
-          message: 'There a problem creating a Post, please try again later'
+          message: 'There was a problem creating a Post, please try again later'
         }
       ]
     }

@@ -1,11 +1,20 @@
 import { ExpressContext } from 'apollo-server-express'
 import { RedisClientType } from 'redis'
-import { Arg, Ctx, Mutation, Query, Resolver } from 'type-graphql'
+import {
+  Arg,
+  Ctx,
+  FieldResolver,
+  Mutation,
+  Query,
+  Resolver,
+  Root
+} from 'type-graphql'
 import { changePassword } from './change-password'
 import { forgotPassword } from './forgot-password'
 import { loginUser } from './login-user'
 import { logoutUser } from './logout-user'
 import { me } from './me'
+import { registerUser } from './register-user'
 import {
   ChangePasswordResponse,
   ForgotPasswordResponse,
@@ -13,11 +22,15 @@ import {
   RegisterUserResponse,
   User,
   UserCredentialsInput
-} from './model'
-import { registerUser } from './register-user'
+} from './_model'
 
 @Resolver(() => User)
 export class UserResolver {
+  @FieldResolver(() => String)
+  email(@Root() user: User, @Ctx() { req }: ExpressContext) {
+    return req.session.userId === user.id ? user.email : ''
+  }
+
   @Mutation(() => RegisterUserResponse)
   registerUser(
     @Arg('input') input: UserCredentialsInput

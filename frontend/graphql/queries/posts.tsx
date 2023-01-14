@@ -8,6 +8,14 @@ export const PostsDoc = graphql(`
         createdAt
         title
         textSnippet
+        author {
+          id
+          username
+        }
+        score
+        myVote {
+          value
+        }
       }
       pagination {
         hasMore

@@ -1,7 +1,7 @@
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime'
 import argon2 from 'argon2'
 import prisma from '../../../prisma'
-import type { RegisterUserResponse, UserCredentialsInput } from './model'
+import type { RegisterUserResponse, UserCredentialsInput } from './_model'
 
 export async function registerUser({
   username,
@@ -40,11 +40,10 @@ export async function registerUser({
   }
   const hashedPassword = await argon2.hash(password)
   try {
-    const newUser = await prisma.user.create({
-      data: { username, email, password: hashedPassword }
-    })
     return {
-      user: newUser
+      user: await prisma.user.create({
+        data: { username, email, password: hashedPassword }
+      })
     }
   } catch (error) {
     if (

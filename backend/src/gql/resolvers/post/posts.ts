@@ -1,6 +1,6 @@
 import prisma from '../../../prisma'
 import type { PaginationInput } from '../models'
-import type { PostsResponse } from './model'
+import { mapPost, type PostsResponse } from './_model'
 
 export async function posts({
   limit,
@@ -14,10 +14,11 @@ export async function posts({
           id: cursor
         }
       : undefined,
-    orderBy: [{ createdAt: 'desc' }, { title: 'asc' }]
+    orderBy: [{ createdAt: 'desc' }, { title: 'asc' }],
+    include: { author: true, votes: { include: { user: true } } }
   })
   return {
-    data: posts,
+    data: posts.map(mapPost),
     pagination: {
       hasMore: posts.length === limit,
       endCursor: posts.length > 0 ? posts[posts.length - 1].id : null

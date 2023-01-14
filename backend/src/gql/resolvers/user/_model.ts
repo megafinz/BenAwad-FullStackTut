@@ -1,5 +1,7 @@
 import { ObjectType, Field, InputType, Int } from 'type-graphql'
 import { ValidationError } from '../models'
+import { Post } from '../post'
+import { PostVote } from '../vote'
 
 @ObjectType()
 export class User {
@@ -11,12 +13,21 @@ export class User {
 
   @Field()
   email!: string
+}
 
+@ObjectType()
+export class UserDetails extends User {
   @Field()
   createdAt!: Date
 
   @Field()
   updatedAt!: Date
+
+  @Field(() => [Post])
+  posts!: Post[]
+
+  @Field(() => [PostVote])
+  votes!: PostVote[]
 }
 
 @InputType()

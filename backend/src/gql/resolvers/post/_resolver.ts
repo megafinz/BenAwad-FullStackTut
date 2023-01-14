@@ -12,23 +12,35 @@ import {
 } from 'type-graphql'
 import { auth } from '../../middleware'
 import { PaginationInput } from '../models'
+import { PostVote, VoteValue } from '../vote'
 import { createPost } from './create-post'
 import { deletePost } from './delete-post'
+import { post } from './post'
+import { posts } from './posts'
 import {
   CreatePostInput,
   CreatePostResponse,
   Post,
   PostsResponse
-} from './model'
-import { post } from './post'
-import { posts } from './posts'
-import { updatePost } from './update-post'
+} from './_model'
 
 @Resolver(() => Post)
 export class PostResolver {
   @FieldResolver(() => String)
   textSnippet(@Root() root: Post) {
     return root.text.slice(0, 50)
+  }
+
+  @FieldResolver(() => Int)
+  score(@Root() root: Post) {
+    const value = (voteValue: VoteValue) => (voteValue === 'UP' ? 1 : -1)
+    return root.votes.reduce((acc, curr) => acc + value(curr.value), 0)
+  }
+
+  @FieldResolver(() => PostVote, { nullable: true })
+  myVote(@Root() root: Post, @Ctx() { req }: ExpressContext): PostVote | null {
+    const myVotes = root.votes.filter(v => v.userId === req.session.userId)
+    return myVotes.length === 1 ? myVotes[0] : null
   }
 
   @Query(() => PostsResponse)
@@ -48,15 +60,6 @@ export class PostResolver {
     @Ctx() { req }: ExpressContext
   ): Promise<CreatePostResponse> {
     return createPost(input, req.session.userId!)
-  }
-
-  @Mutation(() => Post, { nullable: true })
-  @UseMiddleware(auth)
-  async updatePost(
-    @Arg('id', () => Int) id: number,
-    @Arg('title', { nullable: true }) title: string
-  ): Promise<Post | null> {
-    return updatePost(id, title)
   }
 
   @Mutation(() => Boolean)

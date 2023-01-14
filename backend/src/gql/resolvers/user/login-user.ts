@@ -1,7 +1,7 @@
-import { ExpressContext } from 'apollo-server-express'
+import type { ExpressContext } from 'apollo-server-express'
 import argon2 from 'argon2'
 import prisma from '../../../prisma'
-import type { LoginUserResponse } from './model'
+import type { LoginUserResponse } from './_model'
 
 export async function loginUser(
   usernameOrEmail: string,
@@ -20,7 +20,7 @@ export async function loginUser(
       }
       req.session.userId = found.id
       return {
-        user: found
+        user: { ...found }
       }
     }
     return {}

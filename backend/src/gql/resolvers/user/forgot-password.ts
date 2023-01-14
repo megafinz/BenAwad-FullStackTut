@@ -1,9 +1,9 @@
-import { RedisClientType } from 'redis'
+import type { RedisClientType } from 'redis'
 import { v4 } from 'uuid'
 import { FORGOT_PASSWORD_PREFIX } from '../../../constants'
 import prisma from '../../../prisma'
 import { sendForgotPasswordEmail } from '../../../utils/email'
-import { ForgotPasswordResponse } from './model'
+import type { ForgotPasswordResponse } from './_model'
 
 // For security purposes this should be the result for both success and failure paths.
 const RESULT: ForgotPasswordResponse = {

@@ -1,8 +1,8 @@
 import argon2 from 'argon2'
-import { RedisClientType } from 'redis'
+import type { RedisClientType } from 'redis'
 import { FORGOT_PASSWORD_PREFIX } from '../../../constants'
 import prisma from '../../../prisma'
-import { ChangePasswordResponse } from './model'
+import type { ChangePasswordResponse } from './_model'
 
 const SUCCESS_RESULT: ChangePasswordResponse = {
   success: true

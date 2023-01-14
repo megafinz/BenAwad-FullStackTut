@@ -1,5 +1,8 @@
-import { ObjectType, Field, InputType, Int } from 'type-graphql'
+import { Post as DbPost, User as DbUser, Vote as DbVote } from '@prisma/client'
+import { Field, InputType, Int, ObjectType } from 'type-graphql'
 import { PaginationInfo, ValidationError } from '../models'
+import { User } from '../user'
+import { mapVote, PostVote } from '../vote'
 
 @ObjectType()
 export class Post {
@@ -17,6 +20,12 @@ export class Post {
 
   @Field()
   updatedAt!: Date
+
+  @Field(() => User)
+  author!: User
+
+  @Field(() => [PostVote])
+  votes!: PostVote[]
 }
 
 @InputType()
@@ -44,4 +53,10 @@ export class PostsResponse {
 
   @Field(() => PaginationInfo)
   pagination!: PaginationInfo
+}
+
+export function mapPost(
+  dbPost: DbPost & { author: DbUser; votes: (DbVote & { user: DbUser })[] }
+): Post {
+  return { ...dbPost, votes: dbPost.votes.map(mapVote) }
 }

@@ -20,8 +20,10 @@ const documents = {
     "\n  mutation LoginUser($usernameOrEmail: String!, $password: String!) {\n    loginUser(usernameOrEmail: $usernameOrEmail, password: $password) {\n      user {\n        ...UserFields\n      }\n    }\n  }\n": types.LoginUserDocument,
     "\n  mutation LogoutUser {\n    logoutUser\n  }\n": types.LogoutUserDocument,
     "\n  mutation RegisterUser($input: UserCredentialsInput!) {\n    registerUser(input: $input) {\n      errors {\n        field\n        message\n      }\n      user {\n        ...UserFields\n      }\n    }\n  }\n": types.RegisterUserDocument,
+    "\n  mutation Unvote($input: UnvoteInput!) {\n    unvote(input: $input) {\n      success\n      errors {\n        message\n      }\n    }\n  }\n": types.UnvoteDocument,
+    "\n  mutation Vote($input: VoteInput!) {\n    vote(input: $input) {\n      success\n      errors {\n        message\n      }\n    }\n  }\n": types.VoteDocument,
     "\n  query Me {\n    me {\n      ...UserFields\n    }\n  }\n": types.MeDocument,
-    "\n  query Posts($query: PaginationInput!) {\n    posts(query: $query) {\n      data {\n        id\n        createdAt\n        title\n        textSnippet\n      }\n      pagination {\n        hasMore\n        endCursor\n      }\n    }\n  }\n": types.PostsDocument,
+    "\n  query Posts($query: PaginationInput!) {\n    posts(query: $query) {\n      data {\n        id\n        createdAt\n        title\n        textSnippet\n        author {\n          id\n          username\n        }\n        score\n        myVote {\n          value\n        }\n      }\n      pagination {\n        hasMore\n        endCursor\n      }\n    }\n  }\n": types.PostsDocument,
 };
 
 /**
@@ -69,11 +71,19 @@ export function graphql(source: "\n  mutation RegisterUser($input: UserCredentia
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
+export function graphql(source: "\n  mutation Unvote($input: UnvoteInput!) {\n    unvote(input: $input) {\n      success\n      errors {\n        message\n      }\n    }\n  }\n"): (typeof documents)["\n  mutation Unvote($input: UnvoteInput!) {\n    unvote(input: $input) {\n      success\n      errors {\n        message\n      }\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  mutation Vote($input: VoteInput!) {\n    vote(input: $input) {\n      success\n      errors {\n        message\n      }\n    }\n  }\n"): (typeof documents)["\n  mutation Vote($input: VoteInput!) {\n    vote(input: $input) {\n      success\n      errors {\n        message\n      }\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
 export function graphql(source: "\n  query Me {\n    me {\n      ...UserFields\n    }\n  }\n"): (typeof documents)["\n  query Me {\n    me {\n      ...UserFields\n    }\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
-export function graphql(source: "\n  query Posts($query: PaginationInput!) {\n    posts(query: $query) {\n      data {\n        id\n        createdAt\n        title\n        textSnippet\n      }\n      pagination {\n        hasMore\n        endCursor\n      }\n    }\n  }\n"): (typeof documents)["\n  query Posts($query: PaginationInput!) {\n    posts(query: $query) {\n      data {\n        id\n        createdAt\n        title\n        textSnippet\n      }\n      pagination {\n        hasMore\n        endCursor\n      }\n    }\n  }\n"];
+export function graphql(source: "\n  query Posts($query: PaginationInput!) {\n    posts(query: $query) {\n      data {\n        id\n        createdAt\n        title\n        textSnippet\n        author {\n          id\n          username\n        }\n        score\n        myVote {\n          value\n        }\n      }\n      pagination {\n        hasMore\n        endCursor\n      }\n    }\n  }\n"): (typeof documents)["\n  query Posts($query: PaginationInput!) {\n    posts(query: $query) {\n      data {\n        id\n        createdAt\n        title\n        textSnippet\n        author {\n          id\n          username\n        }\n        score\n        myVote {\n          value\n        }\n      }\n      pagination {\n        hasMore\n        endCursor\n      }\n    }\n  }\n"];
 
 export function graphql(source: string) {
   return (documents as any)[source] ?? {};

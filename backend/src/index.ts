@@ -8,7 +8,7 @@ import { createClient as createRedisClient } from 'redis'
 import 'reflect-metadata'
 import { buildSchema } from 'type-graphql'
 import { COOKIE_NAME, __prod__ } from './constants'
-import { PostResolver, UserResolver } from './gql/resolvers'
+import { PostResolver, UserResolver, VoteResolver } from './gql/resolvers'
 import prisma from './prisma'
 
 declare module 'express-session' {
@@ -71,7 +71,7 @@ const main = async () => {
   // Apollo.
   const apolloServer = new ApolloServer({
     schema: await buildSchema({
-      resolvers: [UserResolver, PostResolver],
+      resolvers: [UserResolver, PostResolver, VoteResolver],
       validate: false
     }),
     context: ({ req, res }) => ({ req, res, redis: redisClient }),

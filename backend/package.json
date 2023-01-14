@@ -8,6 +8,7 @@
     "dev": "nodemon dist/src/index.js",
     "watch": "rm -rf dist && tsc -w",
     "db:migrate": "yarn prisma migrate dev",
+    "db:push": "yarn prisma db push",
     "db:reset": "yarn prisma migrate reset",
     "test": "echo \"Error: no test specified\" && exit 1"
   },

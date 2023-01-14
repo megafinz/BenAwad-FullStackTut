@@ -1,7 +1,6 @@
 import { Box, Button, Divider } from '@chakra-ui/react'
 import { Form, Formik } from 'formik'
 import { NextPage } from 'next'
-import NextLink from 'next/link'
 import { useRouter } from 'next/router'
 import { useMutation } from 'urql'
 import InputField from '~/components/InputField'
@@ -43,10 +42,6 @@ const CreatePostPage: NextPage = () => {
               <TextAreaField name="text" label="Text" placeholder="Text" />
               <Button type="submit" isLoading={isSubmitting} colorScheme="teal">
                 Create Post
-              </Button>
-              <Divider />
-              <Button colorScheme="teal" variant="link">
-                <NextLink href="/">Home</NextLink>
               </Button>
             </Box>
           </Form>
