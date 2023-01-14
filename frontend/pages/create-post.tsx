@@ -1,4 +1,4 @@
-import { Box, Button, Divider } from '@chakra-ui/react'
+import { Box, Button, Divider, Heading } from '@chakra-ui/react'
 import { Form, Formik } from 'formik'
 import { NextPage } from 'next'
 import { useRouter } from 'next/router'
@@ -15,7 +15,9 @@ const CreatePostPage: NextPage = () => {
   const router = useRouter()
   const [_, createPost] = useMutation(CreatePostDoc)
   return (
-    <Layout title="Create Post" variant="small">
+    <Layout title="New Post" variant="small">
+      <Heading>New Post</Heading>
+      <Divider />
       <Formik
         initialValues={{ title: '', text: '' }}
         onSubmit={async (values, { setErrors }) => {

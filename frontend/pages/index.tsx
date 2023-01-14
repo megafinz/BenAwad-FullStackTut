@@ -31,5 +31,4 @@ const Home: NextPage = () => {
   )
 }
 
-// TODO: figure out SSR + authentication
-export default withUrqlClient()(Home)
+export default withUrqlClient({ ssr: true })(Home)

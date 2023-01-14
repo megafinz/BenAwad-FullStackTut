@@ -1,4 +1,4 @@
-import { Box, Button, Divider } from '@chakra-ui/react'
+import { Box, Button, Divider, Heading } from '@chakra-ui/react'
 import { Form, Formik } from 'formik'
 import { NextPage } from 'next'
 import NextLink from 'next/link'
@@ -12,6 +12,8 @@ const ForgotPasswordPage: NextPage = () => {
   const [_, forgotPassword] = useMutation(ForgotPasswordDoc)
   return (
     <Layout variant="small" title="Forgot Password">
+      <Heading>Forgot Password</Heading>
+      <Divider />
       <Formik
         initialValues={{ email: '' }}
         onSubmit={async values => {

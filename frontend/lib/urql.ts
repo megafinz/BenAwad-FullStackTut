@@ -38,11 +38,14 @@ const authErrorExchange: Exchange =
 
 export const withUrqlClient = (options?: WithUrqlClientOptions) =>
   _withUrqlClient(
-    ssrExchange => ({
+    (ssrExchange, ctx) => ({
       // TODO: read from config/env vars
       url: 'http://localhost:4000/graphql',
       fetchOptions: {
-        credentials: 'include'
+        credentials: 'include',
+        headers: {
+          cookie: ctx?.req?.headers?.cookie || ''
+        }
       },
       exchanges: [
         dedupExchange,
@@ -75,7 +78,7 @@ export const withUrqlClient = (options?: WithUrqlClientOptions) =>
                 if (!voteResponse?.success || !voteArgs) {
                   return
                 }
-                // TODO: finer grained update
+                // TODO: finer grained update to avoid Posts query refetching
                 cache.invalidate({
                   __typename: 'Post',
                   id: voteArgs.input.postId
@@ -87,7 +90,7 @@ export const withUrqlClient = (options?: WithUrqlClientOptions) =>
                 if (!unvoteResponse?.success || !voteArgs) {
                   return
                 }
-                // TODO: finer grained update
+                // TODO: finer grained update to avoid Posts query refetching
                 cache.invalidate({
                   __typename: 'Post',
                   id: voteArgs.input.postId

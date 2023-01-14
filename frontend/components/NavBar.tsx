@@ -1,10 +1,8 @@
 import { Button, Flex, Link, Spacer, Text, Tooltip } from '@chakra-ui/react'
 import NextLink from 'next/link'
-import { useEffect, useState } from 'react'
 import { useMutation, useQuery } from 'urql'
 import { LogoutUserDoc } from '~/graphql/mutations'
 import { MeDoc } from '~/graphql/queries'
-import { isServer } from '~/utils'
 import Loader from './Loader'
 
 function NavLink({ title, url }: { title: string; url: string }) {
@@ -18,16 +16,8 @@ function NavLink({ title, url }: { title: string; url: string }) {
 }
 
 export default function NavBar() {
-  // Make sure to run the query only after initial hydration (after useEffect())
-  // to avoid client/server hydration mismatch error due to SSR being enabled.
-  const [pauseQuery, setPauseQuery] = useState(true)
-  const [{ data, fetching }] = useQuery({ query: MeDoc, pause: pauseQuery })
+  const [{ data, fetching }] = useQuery({ query: MeDoc })
   const [{ fetching: loggingOut }, logout] = useMutation(LogoutUserDoc)
-  useEffect(() => {
-    if (!isServer()) {
-      setPauseQuery(false)
-    }
-  }, [])
   return (
     <Flex as="nav" bg="tan" p="4" gap="10px" alignItems="center">
       <Tooltip label="Home" openDelay={1000}>

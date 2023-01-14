@@ -1,4 +1,4 @@
-import { Box, Button, Divider } from '@chakra-ui/react'
+import { Box, Button, Divider, Heading } from '@chakra-ui/react'
 import { Form, Formik } from 'formik'
 import { NextPage } from 'next'
 import NextLink from 'next/link'
@@ -14,7 +14,9 @@ const RegisterPage: NextPage = () => {
   const router = useRouter()
   const [_, register] = useMutation(RegisterUserDoc)
   return (
-    <Layout variant="small">
+    <Layout variant="small" title="Register">
+      <Heading>Register</Heading>
+      <Divider />
       <Formik
         initialValues={{ username: '', email: '', password: '' }}
         onSubmit={async (values, { setErrors }) => {
