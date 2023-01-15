@@ -1,4 +1,5 @@
 import prisma from '../../../prisma'
+import { VoteValue } from '../vote'
 import type { CreatePostInput, CreatePostResponse } from './_model'
 
 export async function createPost(
@@ -27,7 +28,16 @@ export async function createPost(
   }
   try {
     const newPost = await prisma.post.create({
-      data: { ...input, authorId: userId },
+      data: {
+        ...input,
+        authorId: userId,
+        votes: {
+          create: {
+            userId,
+            value: VoteValue.UP
+          }
+        }
+      },
       include: { author: true, votes: { include: { user: true } } }
     })
     return {
