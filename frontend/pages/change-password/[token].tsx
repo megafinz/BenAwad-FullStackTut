@@ -1,18 +1,18 @@
+import { useMutation } from '@apollo/client'
 import { Box, Button, Divider } from '@chakra-ui/react'
 import { Form, Formik } from 'formik'
 import { NextPage } from 'next'
 import NextLink from 'next/link'
 import { useRouter } from 'next/router'
-import { useMutation } from 'urql'
 import InputField from '~/components/InputField'
 import Layout from '~/components/Layout'
-import { ChangePasswordDoc } from '~/graphql/mutations'
-import { withUrqlClient } from '~/lib/urql'
+import { CHANGE_PASSWORD_MUT } from '~/graphql/mutations'
 import { toErrorMap } from '~/utils'
 
+// TODO: display gql errors properly
 const ChangePasswordPage: NextPage = () => {
   const router = useRouter()
-  const [_, changePassword] = useMutation(ChangePasswordDoc)
+  const [changePassword] = useMutation(CHANGE_PASSWORD_MUT)
   return (
     <Layout variant="small" title="Change Password">
       <Formik
@@ -22,12 +22,18 @@ const ChangePasswordPage: NextPage = () => {
             typeof router.query.token === 'string' ? router.query.token : ''
         }}
         onSubmit={async (values, { setErrors }) => {
-          const result = await changePassword(values)
+          const result = await changePassword({ variables: { ...values } })
           if (result.data?.changePassword.success) {
             alert('✅ Password has been changed successfully')
             router.push('/login')
           } else if (result.data?.changePassword.errors) {
             setErrors(toErrorMap(result.data.changePassword.errors))
+          } else if (result.errors) {
+            console.error(
+              '❗ Something went wrong while attempting to change password',
+              result.errors
+            )
+            alert('❗ Something went wrong while attempting to change password')
           } else {
             alert('❗ Something went wrong while attempting to change password')
           }
@@ -59,4 +65,4 @@ const ChangePasswordPage: NextPage = () => {
   )
 }
 
-export default withUrqlClient()(ChangePasswordPage)
+export default ChangePasswordPage

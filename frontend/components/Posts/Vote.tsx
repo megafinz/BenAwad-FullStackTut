@@ -1,9 +1,8 @@
+import { useMutation, useQuery } from '@apollo/client'
 import { ChevronDownIcon, ChevronUpIcon } from '@chakra-ui/icons'
 import { Button, Flex, StyleProps, Text, Tooltip } from '@chakra-ui/react'
-import { useMutation, useQuery } from 'urql'
-import { UnvoteDoc } from '~/graphql/mutations/unvote'
-import { VoteDoc } from '~/graphql/mutations/vote'
-import { MeDoc } from '~/graphql/queries'
+import { UNVOTE_MUT, VOTE_MUT } from '~/graphql/mutations'
+import { ME_QUERY, POSTS_QUERY } from '~/graphql/queries'
 import { VoteValue } from '~/graphql/_generated/graphql'
 import { PostProps } from './Post'
 
@@ -12,17 +11,21 @@ const DOWNVOTE_COLOR: StyleProps['color'] = 'blue'
 
 export function Vote({ data }: PostProps) {
   // TODO: loading state?
-  const [{ data: meData }] = useQuery({ query: MeDoc })
-  const [_, vote] = useMutation(VoteDoc)
-  const [__, unvote] = useMutation(UnvoteDoc)
+  const { data: meData } = useQuery(ME_QUERY)
+  const [vote] = useMutation(VOTE_MUT, { refetchQueries: [POSTS_QUERY] })
+  const [unvote] = useMutation(UNVOTE_MUT, { refetchQueries: [POSTS_QUERY] })
   const canVote = !!meData?.me
   const handleVote = async (voteValue: VoteValue) => {
     if (meData?.me?.id) {
       if (data.myVote?.value === voteValue) {
-        await unvote({ input: { userId: meData.me.id, postId: data.id } })
+        await unvote({
+          variables: { input: { userId: meData.me.id, postId: data.id } }
+        })
       } else {
         await vote({
-          input: { userId: meData.me.id, postId: data.id, value: voteValue }
+          variables: {
+            input: { userId: meData.me.id, postId: data.id, value: voteValue }
+          }
         })
       }
     } else {

@@ -1,6 +1,6 @@
+import { useQuery } from '@apollo/client'
 import { Button } from '@chakra-ui/react'
-import { useQuery } from 'urql'
-import { PostsDoc } from '~/graphql/queries'
+import { POSTS_QUERY } from '~/graphql/queries'
 import type { Pagination } from './model'
 import { Post } from './Post'
 
@@ -11,18 +11,17 @@ export interface PostPageProps {
 }
 
 export function PostPage({
-  pagination: pagination,
+  pagination,
   isLastPage,
   onLoadMore
 }: PostPageProps) {
-  const [{ data, fetching }] = useQuery({
-    query: PostsDoc,
-    variables: { query: pagination }
+  const { data, loading } = useQuery(POSTS_QUERY, {
+    variables: { input: { ...pagination } }
   })
   return (
     <>
-      {!fetching && data?.posts.data.map(x => <Post key={x.id} data={x} />)}
-      {isLastPage && fetching && (
+      {!loading && data?.posts.data.map(x => <Post key={x.id} data={x} />)}
+      {isLastPage && loading && (
         <Button color="teal" isLoading={true}>
           Load More
         </Button>

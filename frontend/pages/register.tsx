@@ -1,18 +1,18 @@
+import { useMutation } from '@apollo/client'
 import { Box, Button, Divider, Heading } from '@chakra-ui/react'
 import { Form, Formik } from 'formik'
 import { NextPage } from 'next'
 import NextLink from 'next/link'
 import { useRouter } from 'next/router'
-import { useMutation } from 'urql'
 import InputField from '~/components/InputField'
 import Layout from '~/components/Layout'
-import { RegisterUserDoc } from '~/graphql/mutations'
-import { withUrqlClient } from '~/lib/urql'
+import { REGISTER_USER_MUT } from '~/graphql/mutations'
 import { toErrorMap } from '~/utils'
 
+// TODO: display gql errors properly
 const RegisterPage: NextPage = () => {
   const router = useRouter()
-  const [_, register] = useMutation(RegisterUserDoc)
+  const [register] = useMutation(REGISTER_USER_MUT)
   return (
     <Layout variant="small" title="Register">
       <Heading>Register</Heading>
@@ -20,17 +20,22 @@ const RegisterPage: NextPage = () => {
       <Formik
         initialValues={{ username: '', email: '', password: '' }}
         onSubmit={async (values, { setErrors }) => {
-          const result = await register({ input: values })
+          const result = await register({ variables: { input: values } })
           if (result.data?.registerUser.errors) {
             setErrors(toErrorMap(result.data.registerUser.errors))
           } else if (result.data?.registerUser.user) {
             router.push('/login')
-          } else if (result.error) {
-            console.error(result.error)
+          } else if (result.errors) {
+            console.error(
+              '❗ Something went wrong during user registration process',
+              result.errors
+            )
+            alert('❗ Something went wrong during user registration process')
           } else {
             console.error(
-              'Something went wrong during user registration process'
+              '❗ Something went wrong during user registration process'
             )
+            alert('❗ Something went wrong during user registration process')
           }
         }}
       >
@@ -64,4 +69,4 @@ const RegisterPage: NextPage = () => {
   )
 }
 
-export default withUrqlClient()(RegisterPage)
+export default RegisterPage

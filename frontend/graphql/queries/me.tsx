@@ -1,6 +1,6 @@
 import { graphql } from '../_generated'
 
-export const MeDoc = graphql(/* GraphQL */ `
+export const ME_QUERY = graphql(`
   query Me {
     me {
       ...UserFields

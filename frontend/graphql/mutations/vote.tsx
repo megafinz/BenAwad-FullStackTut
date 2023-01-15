@@ -1,6 +1,6 @@
 import { graphql } from '../_generated'
 
-export const VoteDoc = graphql(`
+export const VOTE_MUT = graphql(`
   mutation Vote($input: VoteInput!) {
     vote(input: $input) {
       success

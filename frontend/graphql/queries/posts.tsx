@@ -1,8 +1,8 @@
 import { graphql } from '../_generated'
 
-export const PostsDoc = graphql(`
-  query Posts($query: PaginationInput!) {
-    posts(query: $query) {
+export const POSTS_QUERY = graphql(`
+  query Posts($input: PaginationInput!) {
+    posts(input: $input) {
       data {
         id
         createdAt

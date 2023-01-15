@@ -44,8 +44,8 @@ export class PostResolver {
   }
 
   @Query(() => PostsResponse)
-  posts(@Arg('query') query: PaginationInput): Promise<PostsResponse> {
-    return posts(query)
+  posts(@Arg('input') input: PaginationInput): Promise<PostsResponse> {
+    return posts(input)
   }
 
   @Query(() => Post, { nullable: true })

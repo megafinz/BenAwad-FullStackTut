@@ -1,6 +1,6 @@
 import { graphql } from '../_generated'
 
-export const RegisterUserDoc = graphql(`
+export const REGISTER_USER_MUT = graphql(`
   mutation RegisterUser($input: UserCredentialsInput!) {
     registerUser(input: $input) {
       errors {

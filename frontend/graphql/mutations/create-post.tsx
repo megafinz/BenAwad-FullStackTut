@@ -1,6 +1,6 @@
 import { graphql } from '../_generated'
 
-export const CreatePostDoc = graphql(`
+export const CREATE_POST_MUT = graphql(`
   mutation CreatePost($input: CreatePostInput!) {
     createPost(input: $input) {
       post {

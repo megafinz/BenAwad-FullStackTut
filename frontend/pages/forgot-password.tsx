@@ -1,15 +1,15 @@
+import { useMutation } from '@apollo/client'
 import { Box, Button, Divider, Heading } from '@chakra-ui/react'
 import { Form, Formik } from 'formik'
 import { NextPage } from 'next'
 import NextLink from 'next/link'
-import { useMutation } from 'urql'
 import InputField from '~/components/InputField'
 import Layout from '~/components/Layout'
-import { ForgotPasswordDoc } from '~/graphql/mutations'
-import { withUrqlClient } from '~/lib/urql'
+import { FORGOT_PASSWORD_MUT } from '~/graphql/mutations'
 
+// TODO: display gql errors properly
 const ForgotPasswordPage: NextPage = () => {
-  const [_, forgotPassword] = useMutation(ForgotPasswordDoc)
+  const [forgotPassword] = useMutation(FORGOT_PASSWORD_MUT)
   return (
     <Layout variant="small" title="Forgot Password">
       <Heading>Forgot Password</Heading>
@@ -17,8 +17,14 @@ const ForgotPasswordPage: NextPage = () => {
       <Formik
         initialValues={{ email: '' }}
         onSubmit={async values => {
-          const result = await forgotPassword(values)
-          if (!result.data?.forgotPassword.message) {
+          const result = await forgotPassword({ variables: { ...values } })
+          if (result.errors) {
+            console.error(
+              '❗ Something went wrong while attempting to reset password',
+              result.errors
+            )
+            alert('❗ Something went wrong while attempting to reset password')
+          } else if (!result.data?.forgotPassword.message) {
             alert('❗ Something went wrong while attempting to reset password')
           } else {
             alert(`✅ ${result.data.forgotPassword.message}`)
@@ -47,4 +53,4 @@ const ForgotPasswordPage: NextPage = () => {
   )
 }
 
-export default withUrqlClient()(ForgotPasswordPage)
+export default ForgotPasswordPage

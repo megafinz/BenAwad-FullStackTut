@@ -1,14 +1,14 @@
+import { useQuery } from '@apollo/client'
 import { Button, Divider, Flex, Heading, Link } from '@chakra-ui/react'
 import { NextPage } from 'next'
 import NextLink from 'next/link'
-import { useQuery } from 'urql'
 import Layout from '~/components/Layout'
 import { PostList } from '~/components/Posts'
-import { MeDoc } from '~/graphql/queries'
-import { withUrqlClient } from '~/lib/urql'
+import { ME_QUERY } from '~/graphql/queries'
 
+// TODO: SSR
 const Home: NextPage = () => {
-  const [{ data }] = useQuery({ query: MeDoc })
+  const { data } = useQuery(ME_QUERY)
   return (
     <Layout>
       <Flex as="main" direction="column" gap={5}>
@@ -31,4 +31,4 @@ const Home: NextPage = () => {
   )
 }
 
-export default withUrqlClient({ ssr: true })(Home)
+export default Home

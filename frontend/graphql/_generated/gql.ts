@@ -23,7 +23,7 @@ const documents = {
     "\n  mutation Unvote($input: UnvoteInput!) {\n    unvote(input: $input) {\n      success\n      errors {\n        message\n      }\n    }\n  }\n": types.UnvoteDocument,
     "\n  mutation Vote($input: VoteInput!) {\n    vote(input: $input) {\n      success\n      errors {\n        message\n      }\n    }\n  }\n": types.VoteDocument,
     "\n  query Me {\n    me {\n      ...UserFields\n    }\n  }\n": types.MeDocument,
-    "\n  query Posts($query: PaginationInput!) {\n    posts(query: $query) {\n      data {\n        id\n        createdAt\n        title\n        textSnippet\n        author {\n          id\n          username\n        }\n        score\n        myVote {\n          value\n        }\n      }\n      pagination {\n        hasMore\n        endCursor\n      }\n    }\n  }\n": types.PostsDocument,
+    "\n  query Posts($input: PaginationInput!) {\n    posts(input: $input) {\n      data {\n        id\n        createdAt\n        title\n        textSnippet\n        author {\n          id\n          username\n        }\n        score\n        myVote {\n          value\n        }\n      }\n      pagination {\n        hasMore\n        endCursor\n      }\n    }\n  }\n": types.PostsDocument,
 };
 
 /**
@@ -83,7 +83,7 @@ export function graphql(source: "\n  query Me {\n    me {\n      ...UserFields\n
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
-export function graphql(source: "\n  query Posts($query: PaginationInput!) {\n    posts(query: $query) {\n      data {\n        id\n        createdAt\n        title\n        textSnippet\n        author {\n          id\n          username\n        }\n        score\n        myVote {\n          value\n        }\n      }\n      pagination {\n        hasMore\n        endCursor\n      }\n    }\n  }\n"): (typeof documents)["\n  query Posts($query: PaginationInput!) {\n    posts(query: $query) {\n      data {\n        id\n        createdAt\n        title\n        textSnippet\n        author {\n          id\n          username\n        }\n        score\n        myVote {\n          value\n        }\n      }\n      pagination {\n        hasMore\n        endCursor\n      }\n    }\n  }\n"];
+export function graphql(source: "\n  query Posts($input: PaginationInput!) {\n    posts(input: $input) {\n      data {\n        id\n        createdAt\n        title\n        textSnippet\n        author {\n          id\n          username\n        }\n        score\n        myVote {\n          value\n        }\n      }\n      pagination {\n        hasMore\n        endCursor\n      }\n    }\n  }\n"): (typeof documents)["\n  query Posts($input: PaginationInput!) {\n    posts(input: $input) {\n      data {\n        id\n        createdAt\n        title\n        textSnippet\n        author {\n          id\n          username\n        }\n        score\n        myVote {\n          value\n        }\n      }\n      pagination {\n        hasMore\n        endCursor\n      }\n    }\n  }\n"];
 
 export function graphql(source: string) {
   return (documents as any)[source] ?? {};

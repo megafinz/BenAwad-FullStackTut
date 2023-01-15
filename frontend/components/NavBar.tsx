@@ -1,8 +1,8 @@
+import { useMutation, useQuery } from '@apollo/client'
 import { Button, Flex, Link, Spacer, Text, Tooltip } from '@chakra-ui/react'
 import NextLink from 'next/link'
-import { useMutation, useQuery } from 'urql'
-import { LogoutUserDoc } from '~/graphql/mutations'
-import { MeDoc } from '~/graphql/queries'
+import { LOGOUT_USER_MUT } from '~/graphql/mutations'
+import { ME_QUERY, POSTS_QUERY } from '~/graphql/queries'
 import Loader from './Loader'
 
 function NavLink({ title, url }: { title: string; url: string }) {
@@ -16,22 +16,24 @@ function NavLink({ title, url }: { title: string; url: string }) {
 }
 
 export default function NavBar() {
-  const [{ data, fetching }] = useQuery({ query: MeDoc })
-  const [{ fetching: loggingOut }, logout] = useMutation(LogoutUserDoc)
+  const { data, loading } = useQuery(ME_QUERY)
+  const [logout, { loading: loggingOut }] = useMutation(LOGOUT_USER_MUT, {
+    refetchQueries: [ME_QUERY, POSTS_QUERY]
+  })
   return (
     <Flex as="nav" bg="tan" p="4" gap="10px" alignItems="center">
       <Tooltip label="Home" openDelay={1000}>
         <NextLink href="/">⚫️</NextLink>
       </Tooltip>
       <Spacer />
-      {fetching && <Loader variant="light" />}
-      {!fetching && !data?.me?.username && (
+      {loading && <Loader variant="light" />}
+      {!loading && !data?.me?.username && (
         <>
           <NavLink title="Login" url="/login" />
           <NavLink title="Register" url="/register" />
         </>
       )}
-      {!fetching && !!data?.me?.id && (
+      {!loading && !!data?.me?.id && (
         <>
           <Text>{data.me.username}</Text>
           <Button

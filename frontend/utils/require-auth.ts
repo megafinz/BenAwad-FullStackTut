@@ -1,14 +1,14 @@
+import { useQuery } from '@apollo/client'
 import { useRouter } from 'next/router'
 import { useEffect } from 'react'
-import { useQuery } from 'urql'
-import { MeDoc } from '~/graphql/queries'
+import { ME_QUERY } from '~/graphql/queries'
 
 export function useRequireAuth() {
   const router = useRouter()
-  const [{ data, fetching }] = useQuery({ query: MeDoc })
+  const { data, loading } = useQuery(ME_QUERY)
   useEffect(() => {
-    if (!fetching && !data?.me) {
+    if (!loading && !data?.me) {
       router.replace(`/login?next=${router.route}`)
     }
-  }, [data, fetching, router])
+  }, [data, loading, router])
 }

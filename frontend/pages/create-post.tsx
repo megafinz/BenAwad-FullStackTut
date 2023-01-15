@@ -1,19 +1,23 @@
+import { useMutation } from '@apollo/client'
 import { Box, Button, Divider, Heading } from '@chakra-ui/react'
 import { Form, Formik } from 'formik'
 import { NextPage } from 'next'
 import { useRouter } from 'next/router'
-import { useMutation } from 'urql'
 import InputField from '~/components/InputField'
 import Layout from '~/components/Layout'
 import TextAreaField from '~/components/TextAreaField'
-import { CreatePostDoc } from '~/graphql/mutations'
-import { withUrqlClient } from '~/lib/urql'
+import { CREATE_POST_MUT } from '~/graphql/mutations'
+import { POSTS_QUERY } from '~/graphql/queries'
 import { toErrorMap, useRequireAuth } from '~/utils'
 
+// TODO: display gql errors properly
+// TODO: optimistic cache updates
 const CreatePostPage: NextPage = () => {
   useRequireAuth()
   const router = useRouter()
-  const [_, createPost] = useMutation(CreatePostDoc)
+  const [createPost] = useMutation(CREATE_POST_MUT, {
+    refetchQueries: [POSTS_QUERY]
+  })
   return (
     <Layout title="New Post" variant="small">
       <Heading>New Post</Heading>
@@ -21,7 +25,7 @@ const CreatePostPage: NextPage = () => {
       <Formik
         initialValues={{ title: '', text: '' }}
         onSubmit={async (values, { setErrors }) => {
-          const result = await createPost({ input: values })
+          const result = await createPost({ variables: { input: values } })
           if (result.data?.createPost?.post?.id) {
             // TODO: navigate to post
             router.push('/')
@@ -32,6 +36,12 @@ const CreatePostPage: NextPage = () => {
             if (fieldErrors) {
               setErrors(toErrorMap(fieldErrors))
             }
+          } else if (result.errors) {
+            console.error(
+              '❗ Something went wrong while attempting to create a Post',
+              result.errors
+            )
+            alert('❗ Something went wrong while attempting to create a Post')
           } else {
             alert('❗ Something went wrong while attempting to create a Post')
           }
@@ -53,4 +63,4 @@ const CreatePostPage: NextPage = () => {
   )
 }
 
-export default withUrqlClient()(CreatePostPage)
+export default CreatePostPage

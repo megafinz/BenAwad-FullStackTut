@@ -1,17 +1,20 @@
+import { useMutation } from '@apollo/client'
 import { Box, Button, Divider, Heading } from '@chakra-ui/react'
 import { Form, Formik } from 'formik'
 import { NextPage } from 'next'
 import NextLink from 'next/link'
 import { useRouter } from 'next/router'
-import { useMutation } from 'urql'
 import InputField from '~/components/InputField'
 import Layout from '~/components/Layout'
-import { LoginUserDoc } from '~/graphql/mutations'
-import { withUrqlClient } from '~/lib/urql'
+import { LOGIN_USER_MUT } from '~/graphql/mutations'
+import { ME_QUERY, POSTS_QUERY } from '~/graphql/queries'
 
+// TODO: display gql errors properly
 const LoginPage: NextPage = () => {
   const router = useRouter()
-  const [_, login] = useMutation(LoginUserDoc)
+  const [login] = useMutation(LOGIN_USER_MUT, {
+    refetchQueries: [ME_QUERY, POSTS_QUERY]
+  })
   return (
     <Layout variant="small" title="Login">
       <Heading>Login</Heading>
@@ -19,9 +22,13 @@ const LoginPage: NextPage = () => {
       <Formik
         initialValues={{ usernameOrEmail: '', password: '' }}
         onSubmit={async (values, { setErrors }) => {
-          const result = await login(values)
-          if (result.error) {
-            console.error(result.error)
+          const result = await login({ variables: { ...values } })
+          if (result.errors) {
+            console.error(
+              '❗ Something went wrong while trying to login',
+              result.errors
+            )
+            alert('❗ Something went wrong while trying to login')
           } else if (!result.data?.loginUser.user) {
             setErrors({
               usernameOrEmail: 'Invalid username or password',
@@ -66,4 +73,4 @@ const LoginPage: NextPage = () => {
   )
 }
 
-export default withUrqlClient()(LoginPage)
+export default LoginPage
