@@ -13,7 +13,7 @@ const Home: NextPage = () => {
     <Layout>
       <Flex as="main" direction="column" gap={5}>
         <Flex alignItems="baseline">
-          <Heading flexGrow={1}>Blogistan</Heading>
+          <Heading flexGrow={1}>Posts</Heading>
           <Button variant="link" color="teal">
             <NextLink
               href={!!data?.me ? '/create-post' : '/login?next=/create-post'}

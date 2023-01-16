@@ -20,6 +20,7 @@ import { posts } from './posts'
 import {
   CreatePostInput,
   CreatePostResponse,
+  DeletePostResponse,
   Post,
   PostsResponse
 } from './_model'
@@ -62,9 +63,12 @@ export class PostResolver {
     return createPost(input, req.session.userId!)
   }
 
-  @Mutation(() => Boolean)
+  @Mutation(() => DeletePostResponse)
   @UseMiddleware(auth)
-  async deletePost(@Arg('id', () => Int) id: number): Promise<boolean> {
-    return deletePost(id)
+  async deletePost(
+    @Arg('id', () => Int) id: number,
+    @Ctx() { req }: ExpressContext
+  ): Promise<DeletePostResponse> {
+    return deletePost(id, req.session.userId!)
   }
 }

@@ -1,14 +1,39 @@
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime'
 import prisma from '../../../prisma'
+import { DeletePostResponse } from './_model'
 
-export async function deletePost(id: number): Promise<boolean> {
+export async function deletePost(
+  id: number,
+  userId: number
+): Promise<DeletePostResponse> {
   try {
-    await prisma.post.delete({ where: { id } })
-    return true
+    const result = await prisma.post.deleteMany({
+      where: { AND: [{ id }, { authorId: userId }] }
+    })
+    return {
+      success: result.count > 0,
+      errors:
+        result.count === 0
+          ? [
+              {
+                message:
+                  "Post is either not found or you don't have the right to delete it"
+              }
+            ]
+          : undefined
+    }
   } catch (error) {
+    console.log(error)
     if (!(error instanceof PrismaClientKnownRequestError)) {
       console.error(error)
     }
-    return false
+    return {
+      success: false,
+      errors: [
+        {
+          message: 'Something went wrong while trying to delete the Post'
+        }
+      ]
+    }
   }
 }

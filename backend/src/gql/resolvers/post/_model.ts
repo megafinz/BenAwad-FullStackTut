@@ -54,6 +54,15 @@ export class PostsResponse {
   pagination!: PaginationInfo
 }
 
+@ObjectType()
+export class DeletePostResponse {
+  @Field()
+  success!: boolean
+
+  @Field(() => [ValidationError], { nullable: true })
+  errors?: ValidationError[]
+}
+
 export function mapPost(
   dbPost: DbPost & { author: DbUser; votes: (DbVote & { user: DbUser })[] }
 ): Post {

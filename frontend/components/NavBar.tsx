@@ -22,11 +22,13 @@ export default function NavBar() {
   })
   return (
     <Flex as="nav" bg="tan" p="4" gap="10px" alignItems="center">
-      <Tooltip label="Home" openDelay={1000}>
-        <NextLink href="/">⚫️</NextLink>
-      </Tooltip>
+      <NextLink href="/" passHref legacyBehavior>
+        <Link fontSize="3xl" fontWeight="bold">
+          [Blogistan]
+        </Link>
+      </NextLink>
       <Spacer />
-      {loading && <Loader variant="light" />}
+      {loading && <Loader />}
       {!loading && !data?.me?.username && (
         <>
           <NavLink title="Login" url="/login" />
