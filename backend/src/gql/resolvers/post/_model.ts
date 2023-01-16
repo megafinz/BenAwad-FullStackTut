@@ -36,6 +36,18 @@ export class CreatePostInput implements Partial<Post> {
   text!: string
 }
 
+@InputType()
+export class UpdatePostInput implements Partial<Post> {
+  @Field()
+  id!: number
+
+  @Field()
+  title?: string
+
+  @Field()
+  text?: string
+}
+
 @ObjectType()
 export class CreatePostResponse {
   @Field(() => Post, { nullable: true })
@@ -58,6 +70,15 @@ export class PostsResponse {
 export class DeletePostResponse {
   @Field()
   success!: boolean
+
+  @Field(() => [ValidationError], { nullable: true })
+  errors?: ValidationError[]
+}
+
+@ObjectType()
+export class UpdatePostResponse {
+  @Field(() => Post, { nullable: true })
+  post?: Post
 
   @Field(() => [ValidationError], { nullable: true })
   errors?: ValidationError[]

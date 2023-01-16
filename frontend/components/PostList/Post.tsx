@@ -17,7 +17,7 @@ export function Post({ data }: PostProps) {
         <GridItem>
           <Heading fontSize="xl">
             <NextLink href={`/post/${data.id}`} passHref legacyBehavior>
-              <Link>{data.title}</Link>
+              <Link>{data.title || '[Missing Title]'}</Link>
             </NextLink>
           </Heading>
         </GridItem>

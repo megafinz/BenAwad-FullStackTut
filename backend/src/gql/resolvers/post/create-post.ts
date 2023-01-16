@@ -1,29 +1,28 @@
 import prisma from '../../../prisma'
+import { ValidationError } from '../models'
 import { VoteValue } from '../vote'
-import type { CreatePostInput, CreatePostResponse } from './_model'
+import { CreatePostInput, CreatePostResponse, mapPost } from './_model'
 
 export async function createPost(
   input: CreatePostInput,
   userId: number
 ): Promise<CreatePostResponse> {
+  const errors: ValidationError[] = []
   if (input.title.length <= 2) {
-    return {
-      errors: [
-        {
-          field: 'title',
-          message: 'Title must be at least 3 characters long'
-        }
-      ]
-    }
+    errors.push({
+      field: 'title',
+      message: 'Title must be at least 3 characters long'
+    })
   }
   if (input.text.length <= 2) {
+    errors.push({
+      field: 'text',
+      message: 'Text must be at least 3 characters long'
+    })
+  }
+  if (errors.length > 0) {
     return {
-      errors: [
-        {
-          field: 'text',
-          message: 'Text must be at least 3 characters long'
-        }
-      ]
+      errors
     }
   }
   try {
@@ -41,7 +40,7 @@ export async function createPost(
       include: { author: true, votes: { include: { user: true } } }
     })
     return {
-      post: { ...newPost, votes: [] }
+      post: mapPost(newPost)
     }
   } catch (error) {
     console.error('Error creating a Post', error)

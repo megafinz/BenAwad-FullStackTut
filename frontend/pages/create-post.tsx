@@ -1,5 +1,5 @@
 import { useMutation } from '@apollo/client'
-import { Box, Button, Divider, Heading } from '@chakra-ui/react'
+import { Box, Button, Divider, Flex, Heading } from '@chakra-ui/react'
 import { Form, Formik } from 'formik'
 import type { NextPage } from 'next'
 import { useRouter } from 'next/router'
@@ -19,27 +19,29 @@ const CreatePostPage: NextPage = () => {
     refetchQueries: [POSTS_QUERY]
   })
   return (
-    <Layout title="New Post" variant="small">
+    <Layout title="New Post">
       <Heading>New Post</Heading>
       <Divider />
       <Formik
         initialValues={{ title: '', text: '' }}
+        onReset={() => {
+          router.push('/')
+        }}
         onSubmit={async (values, { setErrors }) => {
-          const result = await createPost({ variables: { input: values } })
-          if (result.data?.createPost?.post?.id) {
-            // TODO: navigate to post
-            router.push('/')
-          } else if (result.data?.createPost?.errors) {
-            const fieldErrors = result.data.createPost.errors.filter(
-              e => !!e.field
-            )
+          const { data, errors } = await createPost({
+            variables: { input: values }
+          })
+          if (data?.createPost?.post?.id) {
+            router.push(`/post/${data.createPost.post.id}`)
+          } else if (data?.createPost?.errors) {
+            const fieldErrors = data.createPost.errors.filter(x => !!x.field)
             if (fieldErrors) {
               setErrors(toErrorMap(fieldErrors))
             }
-          } else if (result.errors) {
+          } else if (errors) {
             console.error(
               '❗ Something went wrong while attempting to create a Post',
-              result.errors
+              errors
             )
             alert('❗ Something went wrong while attempting to create a Post')
           } else {
@@ -52,9 +54,18 @@ const CreatePostPage: NextPage = () => {
             <Box sx={{ display: 'flex', flexDir: 'column', gap: '20px' }}>
               <InputField name="title" label="Title" placeholder="Title" />
               <TextAreaField name="text" label="Text" placeholder="Text" />
-              <Button type="submit" isLoading={isSubmitting} colorScheme="teal">
-                Create Post
-              </Button>
+              <Flex justifyContent="right" gap={3}>
+                <Button type="reset" isLoading={isSubmitting}>
+                  Cancel
+                </Button>
+                <Button
+                  type="submit"
+                  isLoading={isSubmitting}
+                  colorScheme="teal"
+                >
+                  Create Post
+                </Button>
+              </Flex>
             </Box>
           </Form>
         )}

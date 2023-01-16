@@ -23,12 +23,13 @@ import type {
   GetServerSidePropsResult,
   NextPage
 } from 'next'
+import NextLink from 'next/link'
 import { useRouter } from 'next/router'
 import { useEffect, useRef, useState } from 'react'
 import Layout from '~/components/Layout'
 import Loader from '~/components/Loader'
 import { Vote } from '~/components/Vote'
-import { DELETE_POST_MUT } from '~/graphql/mutations/delete-post'
+import { DELETE_POST_MUT } from '~/graphql/mutations'
 import { ME_QUERY, POSTS_QUERY, POST_QUERY } from '~/graphql/queries'
 
 interface Props {
@@ -45,7 +46,7 @@ const PostPage: NextPage<Props> = ({ id }) => {
   })
   useEffect(() => {
     if (!postLoading && !postData?.post) {
-      router.replace('/404')
+      router.replace('/404', router.asPath)
     }
   }, [postLoading, postData, router])
   return (
@@ -64,7 +65,7 @@ const PostPage: NextPage<Props> = ({ id }) => {
                   {/* Post is by current user */}
                   {meData?.me?.id === postData.post.author.id && (
                     <>
-                      <EditPostButton />
+                      <EditPostButton postId={postData.post.id} />
                       <DeletePostButton postId={postData.post.id} />
                     </>
                   )}
@@ -84,28 +85,13 @@ const PostPage: NextPage<Props> = ({ id }) => {
   )
 }
 
-// TODO: SSR
-export async function getServerSideProps({
-  params
-}: GetServerSidePropsContext): Promise<GetServerSidePropsResult<Props>> {
-  const id = parseInt(typeof params?.id === 'string' ? params.id : '')
-  if (!id) {
-    return {
-      notFound: true
-    }
-  }
-  return {
-    props: {
-      id
-    }
-  }
-}
-
-function EditPostButton() {
+function EditPostButton({ postId }: { postId: number }) {
   return (
     <Tooltip label="Edit Post">
       <IconButton variant="outline" aria-label="Edit Post">
-        <EditIcon />
+        <NextLink href={`/post/${postId}/edit`}>
+          <EditIcon />
+        </NextLink>
       </IconButton>
     </Tooltip>
   )
@@ -184,6 +170,23 @@ function DeletePostButton({ postId }: { postId: number }) {
       </AlertDialog>
     </>
   )
+}
+
+// TODO: SSR
+export async function getServerSideProps({
+  params
+}: GetServerSidePropsContext): Promise<GetServerSidePropsResult<Props>> {
+  const id = parseInt(typeof params?.id === 'string' ? params.id : '')
+  if (!id) {
+    return {
+      notFound: true
+    }
+  }
+  return {
+    props: {
+      id
+    }
+  }
 }
 
 export default PostPage

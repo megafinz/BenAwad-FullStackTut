@@ -17,19 +17,24 @@ import { createPost } from './create-post'
 import { deletePost } from './delete-post'
 import { post } from './post'
 import { posts } from './posts'
+import { updatePost } from './update-post'
 import {
   CreatePostInput,
   CreatePostResponse,
   DeletePostResponse,
   Post,
-  PostsResponse
+  PostsResponse,
+  UpdatePostInput,
+  UpdatePostResponse
 } from './_model'
 
 @Resolver(() => Post)
 export class PostResolver {
   @FieldResolver(() => String)
   textSnippet(@Root() root: Post) {
-    return root.text.slice(0, 50)
+    return root.text.length > 50
+      ? root.text.slice(0, 50).trim() + '…'
+      : root.text
   }
 
   @FieldResolver(() => Int)
@@ -65,10 +70,19 @@ export class PostResolver {
 
   @Mutation(() => DeletePostResponse)
   @UseMiddleware(auth)
-  async deletePost(
+  deletePost(
     @Arg('id', () => Int) id: number,
     @Ctx() { req }: ExpressContext
   ): Promise<DeletePostResponse> {
     return deletePost(id, req.session.userId!)
+  }
+
+  @Mutation(() => UpdatePostResponse)
+  @UseMiddleware(auth)
+  updatePost(
+    @Arg('input') input: UpdatePostInput,
+    @Ctx() { req }: ExpressContext
+  ): Promise<UpdatePostResponse> {
+    return updatePost(input, req.session.userId!)
   }
 }

@@ -23,7 +23,6 @@ export async function deletePost(
           : undefined
     }
   } catch (error) {
-    console.log(error)
     if (!(error instanceof PrismaClientKnownRequestError)) {
       console.error(error)
     }

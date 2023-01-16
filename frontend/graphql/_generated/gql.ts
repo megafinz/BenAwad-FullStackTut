@@ -22,6 +22,7 @@ const documents = {
     "\n  mutation LogoutUser {\n    logoutUser\n  }\n": types.LogoutUserDocument,
     "\n  mutation RegisterUser($input: UserCredentialsInput!) {\n    registerUser(input: $input) {\n      errors {\n        field\n        message\n      }\n      user {\n        ...UserFields\n      }\n    }\n  }\n": types.RegisterUserDocument,
     "\n  mutation Unvote($input: UnvoteInput!) {\n    unvote(input: $input) {\n      success\n      errors {\n        message\n      }\n    }\n  }\n": types.UnvoteDocument,
+    "\n  mutation UpdatePost($input: UpdatePostInput!) {\n    updatePost(input: $input) {\n      post {\n        id\n      }\n      errors {\n        field\n        message\n      }\n    }\n  }\n": types.UpdatePostDocument,
     "\n  mutation Vote($input: VoteInput!) {\n    vote(input: $input) {\n      success\n      errors {\n        message\n      }\n    }\n  }\n": types.VoteDocument,
     "\n  query Me {\n    me {\n      ...UserFields\n    }\n  }\n": types.MeDocument,
     "\n  query Post($id: Int!) {\n    post(id: $id) {\n      id\n      createdAt\n      updatedAt\n      title\n      text\n      score\n      myVote {\n        value\n      }\n      author {\n        id\n        username\n      }\n    }\n  }\n": types.PostDocument,
@@ -78,6 +79,10 @@ export function graphql(source: "\n  mutation RegisterUser($input: UserCredentia
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(source: "\n  mutation Unvote($input: UnvoteInput!) {\n    unvote(input: $input) {\n      success\n      errors {\n        message\n      }\n    }\n  }\n"): (typeof documents)["\n  mutation Unvote($input: UnvoteInput!) {\n    unvote(input: $input) {\n      success\n      errors {\n        message\n      }\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  mutation UpdatePost($input: UpdatePostInput!) {\n    updatePost(input: $input) {\n      post {\n        id\n      }\n      errors {\n        field\n        message\n      }\n    }\n  }\n"): (typeof documents)["\n  mutation UpdatePost($input: UpdatePostInput!) {\n    updatePost(input: $input) {\n      post {\n        id\n      }\n      errors {\n        field\n        message\n      }\n    }\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

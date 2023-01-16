@@ -14,7 +14,7 @@ export async function posts({
           id: cursor
         }
       : undefined,
-    orderBy: [{ createdAt: 'desc' }, { title: 'asc' }],
+    orderBy: [{ createdAt: 'desc' }, { updatedAt: 'desc' }, { title: 'asc' }],
     include: { author: true, votes: { include: { user: true } } }
   })
   return {
