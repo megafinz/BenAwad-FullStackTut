@@ -1,5 +1,5 @@
 import { useMutation, useQuery } from '@apollo/client'
-import { Button, Flex, Link, Spacer, Text, Tooltip } from '@chakra-ui/react'
+import { Button, Flex, Link, Spacer, Text } from '@chakra-ui/react'
 import NextLink from 'next/link'
 import { LOGOUT_USER_MUT } from '~/graphql/mutations'
 import { ME_QUERY, POSTS_QUERY } from '~/graphql/queries'
