@@ -1,12 +1,16 @@
 import { useQuery } from '@apollo/client'
 import { Button, Divider, Flex, Heading, Link } from '@chakra-ui/react'
-import type { NextPage } from 'next'
+import type {
+  GetServerSidePropsContext,
+  GetServerSidePropsResult,
+  NextPage
+} from 'next'
 import NextLink from 'next/link'
 import Layout from '~/components/Layout'
 import { PostList } from '~/components/PostList'
-import { ME_QUERY } from '~/graphql/queries'
+import { ME_QUERY, POSTS_QUERY } from '~/graphql/queries'
+import { createClient, withApolloState } from '~/lib/apollo/server'
 
-// TODO: SSR
 const Home: NextPage = () => {
   const { data } = useQuery(ME_QUERY)
   return (
@@ -29,6 +33,20 @@ const Home: NextPage = () => {
       </Flex>
     </Layout>
   )
+}
+
+export async function getServerSideProps({
+  req
+}: GetServerSidePropsContext): Promise<GetServerSidePropsResult<{}>> {
+  const apolloClient = createClient({ cookies: req.cookies })
+  await apolloClient.query({ query: ME_QUERY })
+  await apolloClient.query({
+    query: POSTS_QUERY,
+    variables: { input: { limit: 10, cursor: null } }
+  })
+  return withApolloState(apolloClient, {
+    props: {}
+  })
 }
 
 export default Home

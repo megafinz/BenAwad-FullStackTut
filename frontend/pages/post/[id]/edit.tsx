@@ -14,47 +14,45 @@ import Loader from '~/components/Loader'
 import TextAreaField from '~/components/TextAreaField'
 import { UPDATE_POST_MUT } from '~/graphql/mutations/update-post'
 import { ME_QUERY, POSTS_QUERY, POST_QUERY } from '~/graphql/queries'
+import { Post } from '~/graphql/_generated/graphql'
+import { createClient, withApolloState } from '~/lib/apollo/server'
 import { toErrorMap } from '~/utils'
 
 interface Props {
-  id: number
+  data: Post
 }
 
-// TODO: SSR
 // TODO: display gql errors properly
 // TODO: optimistic cache updates
-const EditPostPage: NextPage<Props> = ({ id }) => {
+const EditPostPage: NextPage<Props> = ({ data }) => {
   const router = useRouter()
-  const { data: meData, loading: meLoading } = useQuery(ME_QUERY)
-  const { data: postData, loading: postLoading } = useQuery(POST_QUERY, {
-    variables: { id }
-  })
+  const { data: meData, loading } = useQuery(ME_QUERY)
   const [updatePost] = useMutation(UPDATE_POST_MUT, {
-    refetchQueries: [POSTS_QUERY, { query: POST_QUERY, variables: { id } }]
+    refetchQueries: [
+      POSTS_QUERY,
+      { query: POST_QUERY, variables: { id: data.id } }
+    ]
   })
-  const loading = meLoading || postLoading
-  const canEdit = postData?.post?.author.id === meData?.me?.id
+  const canEdit = data.author.id === meData?.me?.id
   useEffect(() => {
-    if (!loading && !postData?.post) {
-      router.replace('/404', router.asPath)
-    } else if (!loading && !canEdit) {
+    if (!loading && !canEdit) {
       router.replace('/403', router.asPath)
     }
-  }, [loading, canEdit, postData, router])
+  }, [loading, canEdit, router])
   return (
     <Layout title="Edit Post">
       <Heading>Edit Post</Heading>
       <Divider />
       {loading && <Loader />}
-      {!loading && canEdit && postData?.post && (
+      {!loading && canEdit && (
         <Formik
           initialValues={{
-            id: postData.post.id,
-            title: postData.post.title,
-            text: postData.post.text
+            id: data.id,
+            title: data.title,
+            text: data.text
           }}
           onReset={() => {
-            router.push(`/post/${id}`)
+            router.push(`/post/${data.id}`)
           }}
           onSubmit={async (values, { setErrors }) => {
             const { data, errors } = await updatePost({
@@ -108,21 +106,32 @@ const EditPostPage: NextPage<Props> = ({ id }) => {
   )
 }
 
-// TODO: SSR
 export async function getServerSideProps({
+  req,
   params
 }: GetServerSidePropsContext): Promise<GetServerSidePropsResult<Props>> {
+  const apolloClient = createClient({ cookies: req.cookies })
   const id = parseInt(typeof params?.id === 'string' ? params.id : '')
   if (!id) {
     return {
       notFound: true
     }
   }
-  return {
-    props: {
-      id
+  await apolloClient.query({ query: ME_QUERY })
+  const { data } = await apolloClient.query({
+    query: POST_QUERY,
+    variables: { id }
+  })
+  if (!data.post) {
+    return {
+      notFound: true
     }
   }
+  return withApolloState(apolloClient, {
+    props: {
+      data: data.post
+    }
+  })
 }
 
 export default EditPostPage

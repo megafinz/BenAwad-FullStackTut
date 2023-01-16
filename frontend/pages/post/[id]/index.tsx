@@ -25,61 +25,49 @@ import type {
 } from 'next'
 import NextLink from 'next/link'
 import { useRouter } from 'next/router'
-import { useEffect, useRef, useState } from 'react'
+import { useRef, useState } from 'react'
 import Layout from '~/components/Layout'
-import Loader from '~/components/Loader'
 import { Vote } from '~/components/Vote'
 import { DELETE_POST_MUT } from '~/graphql/mutations'
 import { ME_QUERY, POSTS_QUERY, POST_QUERY } from '~/graphql/queries'
+import { Post } from '~/graphql/_generated/graphql'
+import { createClient, withApolloState } from '~/lib/apollo/server'
 
 interface Props {
-  id: number
+  data: Post
 }
 
-// TODO: SSR
 // TODO: display gql errors properly
-const PostPage: NextPage<Props> = ({ id }) => {
-  const router = useRouter()
+const PostPage: NextPage<Props> = ({ data }) => {
   const { data: meData } = useQuery(ME_QUERY)
-  const { data: postData, loading: postLoading } = useQuery(POST_QUERY, {
-    variables: { id }
-  })
-  useEffect(() => {
-    if (!postLoading && !postData?.post) {
-      router.replace('/404', router.asPath)
-    }
-  }, [postLoading, postData, router])
   return (
     <Layout title="Post">
       <>
-        {postLoading && <Loader />}
-        {!postLoading && postData?.post && (
-          <Grid templateColumns="auto 1fr" gap={5}>
-            <GridItem>
-              <Vote data={postData.post} />
-            </GridItem>
-            <GridItem>
-              <Flex flexDir="column" gap={5}>
-                <Flex alignItems="center" gap={3}>
-                  <Heading flexGrow={1}>{postData.post.title}</Heading>
-                  {/* Post is by current user */}
-                  {meData?.me?.id === postData.post.author.id && (
-                    <>
-                      <EditPostButton postId={postData.post.id} />
-                      <DeletePostButton postId={postData.post.id} />
-                    </>
-                  )}
-                  {/* Post is by someone else */}
-                  {meData?.me?.id !== postData.post.author.id && (
-                    <Text color="gray">by {postData.post.author.username}</Text>
-                  )}
-                </Flex>
-                <Divider />
-                <Text>{postData.post.text}</Text>
+        <Grid templateColumns="auto 1fr" gap={5}>
+          <GridItem>
+            <Vote data={data} />
+          </GridItem>
+          <GridItem>
+            <Flex flexDir="column" gap={5}>
+              <Flex alignItems="center" gap={3}>
+                <Heading flexGrow={1}>{data.title}</Heading>
+                {/* Post is by current user */}
+                {meData?.me?.id === data.author.id && (
+                  <>
+                    <EditPostButton postId={data.id} />
+                    <DeletePostButton postId={data.id} />
+                  </>
+                )}
+                {/* Post is by someone else */}
+                {meData?.me?.id !== data.author.id && (
+                  <Text color="gray">by {data.author.username}</Text>
+                )}
               </Flex>
-            </GridItem>
-          </Grid>
-        )}
+              <Divider />
+              <Text>{data.text}</Text>
+            </Flex>
+          </GridItem>
+        </Grid>
       </>
     </Layout>
   )
@@ -172,21 +160,32 @@ function DeletePostButton({ postId }: { postId: number }) {
   )
 }
 
-// TODO: SSR
 export async function getServerSideProps({
+  req,
   params
 }: GetServerSidePropsContext): Promise<GetServerSidePropsResult<Props>> {
+  const apolloClient = createClient({ cookies: req.cookies })
   const id = parseInt(typeof params?.id === 'string' ? params.id : '')
   if (!id) {
     return {
       notFound: true
     }
   }
-  return {
-    props: {
-      id
+  await apolloClient.query({ query: ME_QUERY })
+  const { data } = await apolloClient.query({
+    query: POST_QUERY,
+    variables: { id }
+  })
+  if (!data.post) {
+    return {
+      notFound: true
     }
   }
+  return withApolloState(apolloClient, {
+    props: {
+      data: data.post
+    }
+  })
 }
 
 export default PostPage
