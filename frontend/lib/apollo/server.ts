@@ -5,6 +5,7 @@ import {
   InMemoryCache,
   NormalizedCacheObject
 } from '@apollo/client'
+import config from '~/lib/config'
 import { APOLLO_STATE_PROP_NAME, defaultLinks } from './shared'
 
 export function withApolloState(
@@ -25,9 +26,8 @@ export function createClient({ cookies }: Options) {
   const cookie = Object.entries(cookies)
     .map(([k, v]) => `${k}=${v}`)
     .join('; ')
-  // TODO: URI from config
   const httpLink = createHttpLink({
-    uri: 'http://localhost:4000/graphql',
+    uri: config.backend.gqlUrl,
     credentials: 'include',
     headers: {
       cookie

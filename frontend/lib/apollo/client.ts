@@ -1,18 +1,17 @@
 import {
   ApolloClient,
-  ApolloLink,
   createHttpLink,
   from,
   InMemoryCache,
   NormalizedCacheObject
 } from '@apollo/client'
 import { useMemo } from 'react'
+import config from '~/lib/config'
 import { isServer } from '~/utils'
 import { APOLLO_STATE_PROP_NAME, defaultLinks, mergeCache } from './shared'
 
-// TODO: URI from config
 const httpLink = createHttpLink({
-  uri: 'http://localhost:4000/graphql',
+  uri: config.backend.gqlUrl,
   credentials: 'include'
 })
 

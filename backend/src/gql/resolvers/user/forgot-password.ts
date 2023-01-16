@@ -1,6 +1,7 @@
 import type { RedisClientType } from 'redis'
 import { v4 } from 'uuid'
 import { FORGOT_PASSWORD_PREFIX } from '../../../constants'
+import config from '../../../lib/config'
 import prisma from '../../../prisma'
 import { sendForgotPasswordEmail } from '../../../utils/email'
 import type { ForgotPasswordResponse } from './_model'
@@ -22,10 +23,9 @@ export async function forgotPassword(
       60 * 24, // expires in 1 day
       `${user.id}`
     )
-    // TODO: address from config
     await sendForgotPasswordEmail({
       to: user.email,
-      link: `<a href="http://localhost:3000/change-password/${token}">Change Password</a>`
+      link: `<a href="${config.frontend.baseUrl}/change-password/${token}">Change Password</a>`
     })
   }
   return RESULT

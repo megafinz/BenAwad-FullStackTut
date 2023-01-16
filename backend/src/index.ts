@@ -9,6 +9,7 @@ import 'reflect-metadata'
 import { buildSchema } from 'type-graphql'
 import { COOKIE_NAME, __prod__ } from './constants'
 import { PostResolver, UserResolver, VoteResolver } from './gql/resolvers'
+import config from './lib/config'
 import prisma from './prisma'
 
 declare module 'express-session' {
@@ -17,21 +18,13 @@ declare module 'express-session' {
   }
 }
 
-const REDIS_SECRET = process.env.REDIS_SECRET
-
 const main = async () => {
-  if (!REDIS_SECRET) {
-    throw new Error('REDIS_SECRET env var is not set')
-  }
-
-  const port = parseInt(process.env.PORT || '4000')
   const app = express().disable('x-powered-by')
 
   // CORS.
-  // TODO: read from config
   app.use(
     cors({
-      origin: 'http://localhost:3000',
+      origin: config.frontend.baseUrl,
       credentials: true
     })
   )
@@ -62,7 +55,7 @@ const main = async () => {
         sameSite: 'lax',
         secure: __prod__ // only in https
       },
-      secret: REDIS_SECRET,
+      secret: config.db.redisSecret,
       saveUninitialized: false,
       resave: false
     })
@@ -90,8 +83,10 @@ const main = async () => {
   app.set('trust proxy', 1)
 
   // Start Server.
-  app.listen(port, () => {
-    console.log(`Server started on port ${port}`)
+  app.listen(config.backend.port, config.backend.hostname, () => {
+    console.log(
+      `Server started on port HOST '${config.backend.hostname}' and PORT '${config.backend.port}'`
+    )
   })
 }
 
