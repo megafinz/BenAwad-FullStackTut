@@ -87,6 +87,8 @@ const main = async () => {
 
   apolloServer.applyMiddleware({ app, cors: false })
 
+  app.set('trust proxy', 1)
+
   // Start Server.
   app.listen(port, () => {
     console.log(`Server started on port ${port}`)
