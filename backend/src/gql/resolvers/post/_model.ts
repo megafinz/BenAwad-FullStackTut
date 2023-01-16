@@ -24,7 +24,6 @@ export class Post {
   @Field(() => User)
   author!: User
 
-  @Field(() => [PostVote])
   votes!: PostVote[]
 }
 

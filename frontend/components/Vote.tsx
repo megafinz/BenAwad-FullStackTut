@@ -4,12 +4,21 @@ import { Button, Flex, StyleProps, Text, Tooltip } from '@chakra-ui/react'
 import { UNVOTE_MUT, VOTE_MUT } from '~/graphql/mutations'
 import { ME_QUERY, POSTS_QUERY } from '~/graphql/queries'
 import { VoteValue } from '~/graphql/_generated/graphql'
-import { PostProps } from './Post'
 
 const UPVOTE_COLOR: StyleProps['color'] = 'red'
 const DOWNVOTE_COLOR: StyleProps['color'] = 'blue'
 
-export function Vote({ data }: PostProps) {
+interface Props {
+  data: {
+    id: number
+    score: number
+    myVote?: {
+      value: VoteValue
+    } | null
+  }
+}
+
+export function Vote({ data: { id, score, myVote } }: Props) {
   // TODO: loading state?
   const { data: meData } = useQuery(ME_QUERY)
   const [vote] = useMutation(VOTE_MUT, { refetchQueries: [POSTS_QUERY] })
@@ -17,14 +26,14 @@ export function Vote({ data }: PostProps) {
   const canVote = !!meData?.me
   const handleVote = async (voteValue: VoteValue) => {
     if (meData?.me?.id) {
-      if (data.myVote?.value === voteValue) {
+      if (myVote?.value === voteValue) {
         await unvote({
-          variables: { input: { userId: meData.me.id, postId: data.id } }
+          variables: { input: { userId: meData.me.id, postId: id } }
         })
       } else {
         await vote({
           variables: {
-            input: { userId: meData.me.id, postId: data.id, value: voteValue }
+            input: { userId: meData.me.id, postId: id, value: voteValue }
           }
         })
       }
@@ -42,7 +51,7 @@ export function Vote({ data }: PostProps) {
         <Button
           variant="ghost"
           size="sm"
-          color={data.myVote?.value === VoteValue.Up ? UPVOTE_COLOR : 'current'}
+          color={myVote?.value === VoteValue.Up ? UPVOTE_COLOR : 'current'}
           disabled={!canVote}
           onClick={() => handleVote(VoteValue.Up)}
         >
@@ -52,14 +61,14 @@ export function Vote({ data }: PostProps) {
       <Text
         fontSize="lg"
         color={
-          data.myVote?.value === VoteValue.Up
+          myVote?.value === VoteValue.Up
             ? UPVOTE_COLOR
-            : data.myVote?.value === VoteValue.Down
+            : myVote?.value === VoteValue.Down
             ? DOWNVOTE_COLOR
             : 'current'
         }
       >
-        {data.score}
+        {score}
       </Text>
       <Tooltip
         label="You must be logged in to vote"
@@ -69,9 +78,7 @@ export function Vote({ data }: PostProps) {
         <Button
           variant="ghost"
           size="sm"
-          color={
-            data.myVote?.value === VoteValue.Down ? DOWNVOTE_COLOR : 'current'
-          }
+          color={myVote?.value === VoteValue.Down ? DOWNVOTE_COLOR : 'current'}
           disabled={!canVote}
           onClick={() => handleVote(VoteValue.Down)}
         >

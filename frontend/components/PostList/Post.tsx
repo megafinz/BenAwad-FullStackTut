@@ -1,6 +1,7 @@
-import { Box, Grid, GridItem, Heading, Text } from '@chakra-ui/react'
+import { Box, Grid, GridItem, Heading, Link, Text } from '@chakra-ui/react'
 import type { Post as PostModel } from './model'
-import { Vote } from './Vote'
+import { Vote } from '../Vote'
+import NextLink from 'next/link'
 
 export interface PostProps {
   data: PostModel
@@ -14,7 +15,11 @@ export function Post({ data }: PostProps) {
           <Vote data={data} />
         </GridItem>
         <GridItem>
-          <Heading fontSize="xl">{data.title}</Heading>
+          <Heading fontSize="xl">
+            <NextLink href={`/post/${data.id}`} passHref legacyBehavior>
+              <Link>{data.title}</Link>
+            </NextLink>
+          </Heading>
         </GridItem>
         <GridItem>
           <Text color="gray">by {data.author.username}</Text>

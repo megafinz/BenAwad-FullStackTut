@@ -1,9 +1,9 @@
 import { useQuery } from '@apollo/client'
 import { Button, Divider, Flex, Heading, Link } from '@chakra-ui/react'
-import { NextPage } from 'next'
+import type { NextPage } from 'next'
 import NextLink from 'next/link'
 import Layout from '~/components/Layout'
-import { PostList } from '~/components/Posts'
+import { PostList } from '~/components/PostList'
 import { ME_QUERY } from '~/graphql/queries'
 
 // TODO: SSR

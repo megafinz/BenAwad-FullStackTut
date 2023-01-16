@@ -23,6 +23,7 @@ const documents = {
     "\n  mutation Unvote($input: UnvoteInput!) {\n    unvote(input: $input) {\n      success\n      errors {\n        message\n      }\n    }\n  }\n": types.UnvoteDocument,
     "\n  mutation Vote($input: VoteInput!) {\n    vote(input: $input) {\n      success\n      errors {\n        message\n      }\n    }\n  }\n": types.VoteDocument,
     "\n  query Me {\n    me {\n      ...UserFields\n    }\n  }\n": types.MeDocument,
+    "\n  query Post($id: Int!) {\n    post(id: $id) {\n      id\n      createdAt\n      updatedAt\n      title\n      text\n      score\n      myVote {\n        value\n      }\n      author {\n        id\n        username\n      }\n    }\n  }\n": types.PostDocument,
     "\n  query Posts($input: PaginationInput!) {\n    posts(input: $input) {\n      data {\n        id\n        createdAt\n        title\n        textSnippet\n        author {\n          id\n          username\n        }\n        score\n        myVote {\n          value\n        }\n      }\n      pagination {\n        hasMore\n        endCursor\n      }\n    }\n  }\n": types.PostsDocument,
 };
 
@@ -80,6 +81,10 @@ export function graphql(source: "\n  mutation Vote($input: VoteInput!) {\n    vo
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(source: "\n  query Me {\n    me {\n      ...UserFields\n    }\n  }\n"): (typeof documents)["\n  query Me {\n    me {\n      ...UserFields\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  query Post($id: Int!) {\n    post(id: $id) {\n      id\n      createdAt\n      updatedAt\n      title\n      text\n      score\n      myVote {\n        value\n      }\n      author {\n        id\n        username\n      }\n    }\n  }\n"): (typeof documents)["\n  query Post($id: Int!) {\n    post(id: $id) {\n      id\n      createdAt\n      updatedAt\n      title\n      text\n      score\n      myVote {\n        value\n      }\n      author {\n        id\n        username\n      }\n    }\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

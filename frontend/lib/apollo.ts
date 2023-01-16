@@ -9,7 +9,6 @@ import { onError } from '@apollo/client/link/error'
 
 const consoleLink = new ApolloLink((operation, forward) => {
   console.log(`[APOLLO] Starting request for '${operation.operationName}'`)
-  console.dir(operation.getContext())
   return forward(operation).map(data => {
     console.log(`[APOLLO] Ending request for '${operation.operationName}'`)
     return data

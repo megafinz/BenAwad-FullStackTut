@@ -1,7 +1,7 @@
 import { useMutation } from '@apollo/client'
 import { Box, Button, Divider, Heading } from '@chakra-ui/react'
 import { Form, Formik } from 'formik'
-import { NextPage } from 'next'
+import type { NextPage } from 'next'
 import NextLink from 'next/link'
 import { useRouter } from 'next/router'
 import InputField from '~/components/InputField'
