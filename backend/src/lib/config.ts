@@ -1,4 +1,7 @@
+import dotenv from 'dotenv'
 import { z } from 'zod'
+
+dotenv.config()
 
 const ConfigSchema = z.object({
   node: z.object({
