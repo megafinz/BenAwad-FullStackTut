@@ -30,4 +30,4 @@ This is my take on coding along with the Ben Awad's [Full Stack React GraphQL Ty
 # Notes
 
 1. I'm using [prisma](https://www.prisma.io/) instead of [MikroORM](https://mikro-orm.io/) and [TypeORM](https://typeorm.io/) that Ben uses in tutorial. IMO it's much nicer to use and supports all required features out of the box without the need to resolve to writing raw SQL code.
-2. I'm using [Apollo Client](https://www.apollographql.com/docs/react) instead of [urql](https://formidable.com/open-source/urql/), IMO developer experience is much nicer with Apollo, just look how Ben struggles with the cache updates.
+2. I'm using [Apollo Client](https://www.apollographql.com/docs/react) instead of [urql](https://formidable.com/open-source/urql/), IMO developer experience is much nicer with Apollo (although SSR setup is a little bit more involved), just look how Ben struggles with the cache updates.
