@@ -12,20 +12,27 @@ This is my take on coding along with the Ben Awad's [Full Stack React GraphQL Ty
 ## Backend
 
 1. `cd` into `backend` folder.
-2. Two options:
+2. Create `.env` and `.docker.env` files (see `.env.example`). `.docker.env` file is used by `docker-run-*` scripts.
+3. Two options:
    1. Run server locally:
       1. Run `./docker-run-db.sh` to bring up PostgreSQL and Redis databases.
       2. Run `yarn watch` to compile TypeScript code into runnable JavaScript.
       3. Run `yarn dev` to start backend server.
    2. Run server via docker:
       1. Run `./docker-run-all--build.sh` to bring up PostgreSQL and Redis databases and to **build** and run server image. Run this if you make any changes to the code and want to test these changes in docker.
-      2. Run `./docker-run-all.sh` to bring up PostgreSQL and Redis databases and to run **previously built** server image. If the image was never built before, `docker-compose` will build it for you, otherwise it will reuse the last built image that may not include your latest changes to the code.
+      2. Run `./docker-run-all.sh` to bring up PostgreSQL and Redis databases and to run **previously built** server image. If the image has never been built before, `docker-compose` will build it for you, otherwise it will reuse the last built image that may not include your latest changes to the code.
 
 ## Frontend
 
 1. `cd` into `frontend` folder.
-2. Run `yarn codegen:watch` to start [GraphQL Code Generator](https://the-guild.dev/graphql/codegen/docs/getting-started) (optional if you don't change `graphql/**/*.tsx` files that contain queries and mutations).
-3. Run `yarn dev` to start NextJS server that will serve the UI.
+2. Create `.env` and `.docker.env` files (see `.env.example`). `.docker.env` file is used by `docker-run-*` scripts.
+3. Two options:
+   1. Run frontend locally:
+      1. Run `yarn codegen:watch` to start [GraphQL Code Generator](https://the-guild.dev/graphql/codegen/docs/getting-started) (optional if you don't change `graphql/**/*.tsx` files that contain queries and mutations).
+      2. Run `yarn dev` to start NextJS server that will serve the UI.
+   2. Run frontend via docker:
+      1.  Run `./docker-run--build.sh` to **build** and run frontend image. Run this if you make any changes to the code and want to test these changes in docker.
+      2. Run `./docker-run.sh` to run **previously built** frontend image. If the image has never been built before, `docker-compose` will build it for you, otherwise it will reuse the last built image that may not include your latest changes to the code.
 
 # Notes
 

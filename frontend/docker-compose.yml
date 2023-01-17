@@ -1,0 +1,7 @@
+services:
+  web:
+    build: .
+    environment:
+      BACKEND_GRAPHQL_URL: ${BACKEND_GRAPHQL_URL:-http://host.docker.internal:4000/graphql}
+    ports:
+      - "3000:3000"

@@ -17,6 +17,7 @@ RUN yarn build && yarn cache clean
 
 # ----- RUNNER -----
 
+# TODO: check if it's possible to use alpine image to reduce size
 FROM node:19 as runner
 ENV NODE_ENV production
 WORKDIR /app
