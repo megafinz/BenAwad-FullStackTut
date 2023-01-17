@@ -1,11 +1,12 @@
 {
-  "name": "benawadfullstacktut",
+  "name": "benawadfullstacktut--backend",
   "version": "1.0.0",
-  "description": "",
+  "description": "Backend API that hosts GraphQL endpoint",
   "main": "index.js",
   "scripts": {
     "start": "node dist/src/index.js",
     "dev": "nodemon dist/src/index.js",
+    "build": "tsc",
     "watch": "rm -rf dist && tsc -w",
     "db:migrate": "yarn prisma migrate dev",
     "db:push": "yarn prisma db push",
@@ -16,7 +17,7 @@
     "seed": "ts-node prisma/seed/seed.ts"
   },
   "keywords": [],
-  "author": "",
+  "author": "megafinz",
   "license": "ISC",
   "devDependencies": {
     "@types/connect-redis": "^0.0.19",
