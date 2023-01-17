@@ -12,9 +12,14 @@ This is my take on coding along with the Ben Awad's [Full Stack React GraphQL Ty
 ## Backend
 
 1. `cd` into `backend` folder.
-2. Run `docker-compose up` to bring up PostgreSQL and Redis databases.
-3. Run `yarn watch` to compile TypeScript code into runnable JavaScript.
-4. Run `yarn dev` to start backend server.
+2. Two options:
+   1. Run server locally:
+      1. Run `./docker-run-db.sh` to bring up PostgreSQL and Redis databases.
+      2. Run `yarn watch` to compile TypeScript code into runnable JavaScript.
+      3. Run `yarn dev` to start backend server.
+   2. Run server via docker:
+      1. Run `./docker-run-all--build.sh` to bring up PostgreSQL and Redis databases and to **build** and run server image. Run this if you make any changes to the code and want to test these changes in docker.
+      2. Run `./docker-run-all.sh` to bring up PostgreSQL and Redis databases and to run **previously built** server image. If the image was never built before, `docker-compose` will build it for you, otherwise it will reuse the last built image that may not include your latest changes to the code.
 
 ## Frontend
 
