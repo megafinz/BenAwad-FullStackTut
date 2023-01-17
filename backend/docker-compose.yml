@@ -18,9 +18,13 @@ services:
   server:
     build: .
     environment:
+      # Must be "development", otherwise express expect being served through https
+      # and won't sent session cookies
+      NODE_ENV: development
       WEB_APP_BASE_URL: $WEB_APP_BASE_URL
       DATABASE_URL: $DATABASE_URL
       REDIS_URL: $REDIS_URL
       REDIS_SECRET: $REDIS_SECRET
+      # DEBUG: express-session
     ports:
       - "4000:4000"
